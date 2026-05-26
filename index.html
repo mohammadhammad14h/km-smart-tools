@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KM Smart Tools | KnowledgeMentor_Hammad</title>
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    
+    <!-- Intl-Tel-Input -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #111827; }
+        .royal-blue { color: #1e3a8a; }
+        .bg-royal-blue { background-color: #1e3a8a; }
+        .tab-active { background-color: #1e3a8a !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.2); }
+        
+        [contenteditable=true]:empty:before {
+            content: attr(data-placeholder);
+            color: #94a3b8;
+            pointer-events: none;
+            display: block;
+        }
+
+        .scam-typo {
+            text-decoration: underline wavy #ef4444;
+            text-decoration-thickness: 2px;
+            cursor: pointer;
+        }
+
+        .reveal-up { animation: revealUp 0.4s ease-out forwards; }
+        @keyframes revealUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-circle {
+            transition: stroke-dashoffset 1s ease-in-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        #lock-overlay { transition: opacity 0.5s ease-in-out; }
+        .dashboard-locked { filter: blur(15px); pointer-events: none; user-select: none; }
+        
+        .iti { width: 100%; }
+        .iti__content { z-index: 100; }
+    </style>
+</head>
+<body class="antialiased selection:bg-blue-100">
+
+    <!-- DATA LOCK GATEWAY OVERLAY -->
+    <div id="lock-overlay" class="fixed inset-0 z-[100] flex items-center justify-center bg-white/60 backdrop-blur-md px-4">
+        <div class="bg-white border border-gray-200 w-full max-w-lg p-8 md:p-10 rounded-[2.5rem] shadow-[0_25px_60px_rgba(30,58,138,0.25)] reveal-up">
+            <div class="text-center space-y-4">
+                <div class="w-16 h-16 bg-blue-50 royal-blue rounded-2xl flex items-center justify-center mx-auto text-3xl">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+                <h2 class="text-3xl font-black tracking-tighter">🔒 Unlock KM Premium Tools for <span class="royal-blue">100% FREE</span></h2>
+                <p class="text-gray-600 font-medium text-sm leading-relaxed">
+                    Please enter your correct WhatsApp number. Activation password will be sent to your WhatsApp contact.
+                </p>
+            </div>
+            
+            <form id="unlock-form" class="mt-8 space-y-5">
+                <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Full Name</label>
+                    <input type="text" id="user-name" name="Name" required minlength="3" class="w-full mt-1 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-royal-blue outline-none transition-all font-medium" placeholder="Full Name">
+                </div>
+                <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Email Address</label>
+                    <input type="email" id="user-email" name="Email" required class="w-full mt-1 px-5 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:border-royal-blue outline-none transition-all font-medium" placeholder="name@example.com">
+                </div>
+                <div>
+                    <label class="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">WhatsApp Number</label>
+                    <input type="tel" id="user-whatsapp" name="WhatsApp" required class="w-full mt-1">
+                </div>
+                <button type="submit" id="submit-btn" class="w-full bg-royal-blue text-white font-black py-5 rounded-2xl text-lg flex items-center justify-center gap-3 hover:opacity-90 transition-all shadow-xl shadow-blue-900/20">
+                    Unlock Tools Now 🚀
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN DASHBOARD -->
+    <div id="main-dashboard" class="dashboard-locked">
+        <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <img src="https://i.postimg.cc/zfYf8tQ5/logo.png" alt="KnowledgeMentor Logo" class="h-10 w-10 object-contain rounded-lg">
+                    <h1 class="font-black text-xl tracking-tighter royal-blue uppercase">KM Smart Tools</h1>
+                </div>
+                <a href="https://www.linkedin.com/in/mohammad-hammad-cs" target="_blank" class="bg-slate-50 border border-slate-200 px-5 py-2.5 rounded-full text-xs font-black royal-blue hover:bg-white transition-all">
+                    <i class="fab fa-linkedin mr-2"></i> FOUNDER
+                </a>
+            </div>
+        </header>
+
+        <main class="max-w-5xl mx-auto px-4 py-12">
+            <!-- TABS -->
+            <div class="flex bg-slate-100 p-1.5 rounded-2xl max-w-sm mx-auto mb-16 shadow-inner">
+                <button id="tab-job-btn" class="flex-1 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest tab-active transition-all">Job Verifier</button>
+                <button id="tab-resume-btn" class="flex-1 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest text-gray-500 transition-all">Resume Scanner</button>
+            </div>
+
+            <!-- JOB VERIFIER -->
+            <section id="job-section" class="reveal-up space-y-8">
+                <div class="bg-white border border-gray-100 rounded-[2.5rem] p-6 md:p-10 shadow-2xl shadow-gray-200/40 relative">
+                    <h2 class="text-2xl font-black tracking-tight mb-6">Job Authenticity <span class="royal-blue italic">Verifier</span></h2>
+                    <div id="job-editor" contenteditable="true" data-placeholder="Paste the job description or recruitment message here to verify..." class="w-full min-h-[300px] p-8 bg-slate-50 border-2 border-slate-100 rounded-[2rem] focus:border-royal-blue outline-none transition-all text-gray-700 font-medium leading-relaxed text-lg overflow-y-auto"></div>
+                    <button id="verify-job-btn" class="w-full mt-8 bg-royal-blue text-white font-black py-6 rounded-2xl text-xl shadow-xl shadow-blue-900/20">
+                        ANALYZE JOB CONTENT
+                    </button>
+                </div>
+
+                <div id="job-result" class="hidden reveal-up p-10 rounded-[3rem] border-b-[15px] shadow-2xl">
+                    <div class="flex items-center justify-between mb-8">
+                        <div id="job-badge" class="px-6 py-3 rounded-xl font-black text-white text-xs tracking-widest uppercase"></div>
+                        <p id="job-score-text" class="text-4xl font-black"></p>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-white/50 p-6 rounded-2xl border border-white/50"><h4 class="text-[10px] font-black text-gray-400 uppercase mb-4 tracking-[0.2em]">Risk Flags</h4><ul id="job-flags" class="space-y-3 text-sm font-bold"></ul></div>
+                        <div class="bg-white/50 p-6 rounded-2xl border border-white/50"><h4 class="text-[10px] font-black text-gray-400 uppercase mb-4 tracking-[0.2em]">Advisory</h4><p id="job-advice" class="text-sm font-medium italic"></p></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RESUME SCANNER -->
+            <section id="resume-section" class="hidden reveal-up space-y-8">
+                <div class="bg-white border border-gray-100 rounded-[2.5rem] p-10 shadow-2xl shadow-gray-200/50">
+                    <h2 class="text-2xl font-black tracking-tight mb-8">PDF Resume <span class="royal-blue italic">Reviewer</span></h2>
+                    <div id="drop-zone" class="border-4 border-dashed border-slate-100 bg-slate-50 rounded-[2rem] p-16 text-center cursor-pointer hover:border-royal-blue transition-all group">
+                        <input type="file" id="pdf-input" class="hidden" accept=".pdf">
+                        <i class="fas fa-file-pdf text-5xl text-gray-200 group-hover:royal-blue transition-colors mb-4"></i>
+                        <p class="text-lg font-black" id="pdf-name">📁 Upload Resume PDF</p>
+                    </div>
+                    <button id="scan-resume-btn" class="w-full mt-8 bg-royal-blue text-white font-black py-6 rounded-2xl text-xl shadow-xl shadow-blue-900/20">
+                        ANALYZE RESUME SCORE
+                    </button>
+                    <div id="resume-result" class="hidden mt-12 grid lg:grid-cols-3 gap-10">
+                        <div class="lg:col-span-1 flex flex-col items-center justify-center p-10 bg-slate-50 rounded-[3rem]">
+                            <div class="relative w-40 h-40 mb-4">
+                                <svg class="w-full h-full" viewBox="0 0 100 100">
+                                    <circle class="text-slate-200" stroke-width="8" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50"/>
+                                    <circle id="score-circle" class="score-circle royal-blue" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="264" stroke-linecap="round" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50"/>
+                                </svg>
+                                <span id="score-pct" class="absolute inset-0 flex items-center justify-center text-3xl font-black royal-blue">0%</span>
+                            </div>
+                            <p id="resume-verdict" class="text-[10px] font-black uppercase tracking-widest royal-blue"></p>
+                        </div>
+                        <div class="lg:col-span-2 space-y-4">
+                            <div class="bg-emerald-50 p-6 rounded-2xl border border-emerald-100"><h4 class="text-xs font-black text-emerald-700 uppercase mb-3 tracking-widest">Strengths</h4><ul id="resume-pros" class="text-xs font-bold text-emerald-800 space-y-2"></ul></div>
+                            <div class="bg-red-50 p-6 rounded-2xl border border-red-100"><h4 class="text-xs font-black text-red-700 uppercase mb-3 tracking-widest">Required Improvements</h4><ul id="resume-cons" class="text-xs font-bold text-red-800 space-y-2"></ul></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="py-12 text-center text-[10px] font-black text-gray-300 uppercase tracking-[0.5em]">
+        KnowledgeMentor_Hammad &copy; 2024 &bull; Built to Protect
+    </footer>
+
+    <script>
+        const GOOGLE_SHEET_API_URL = "https://sheetdb.io/api/v1/8gykwkntnl2br";
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+        // --- GATEWAY LOGIC ---
+        const phoneInput = document.querySelector("#user-whatsapp");
+        const iti = window.intlTelInput(phoneInput, {
+            preferredCountries: ['pk', 'ae', 'sa', 'qa'],
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+        });
+
+        const lockOverlay = document.getElementById('lock-overlay');
+        const mainDashboard = document.getElementById('main-dashboard');
+
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('toolsUnlocked') === 'true') {
+                unlockTools();
+            }
+        });
+
+        document.getElementById('unlock-form').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            // Custom Bypass Validation for Pakistani Series (0370, etc)
+            const rawValue = phoneInput.value.replace(/\D/g, ''); // Strip all non-digits
+            const countryData = iti.getSelectedCountryData();
+            
+            // Pakistan specific validation
+            if (countryData.iso2 === 'pk') {
+                // If number starts with 0, remove it for count
+                const cleanLen = rawValue.startsWith('0') ? rawValue.length - 1 : rawValue.length;
+                if (cleanLen !== 10) {
+                    alert("Please enter a complete 10 or 11-digit WhatsApp number (e.g., 03701234567).");
+                    return;
+                }
+            } else if (rawValue.length < 8) {
+                alert("Please enter a valid phone number.");
+                return;
+            }
+
+            const btn = document.getElementById('submit-btn');
+            btn.innerText = "Verifying & Connecting... 🚀";
+            btn.disabled = true;
+
+            // Manual formatting if iti fails for new codes
+            let formattedPhone = iti.getNumber();
+            if (!formattedPhone || formattedPhone.includes('undefined')) {
+                const dialCode = countryData.dialCode;
+                const cleanVal = rawValue.startsWith('0') ? rawValue.substring(1) : rawValue;
+                formattedPhone = `+${dialCode}${cleanVal}`;
+            }
+
+            const payload = {
+                "data": [{
+                    "Name": document.getElementById('user-name').value,
+                    "Email": document.getElementById('user-email').value,
+                    "WhatsApp": formattedPhone
+                }]
+            };
+
+            try {
+                await fetch(GOOGLE_SHEET_API_URL, {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const encodedText = encodeURIComponent("Hi Hammad, I have submitted my details on KM Smart Tools. Please verify my account and share the access approval key.");
+                window.open(`https://wa.me/923332429295?text=${encodedText}`, '_blank');
+                
+                localStorage.setItem('toolsUnlocked', 'true');
+                unlockTools();
+            } catch (err) {
+                console.error(err);
+                alert("Submission error. Unlocking anyway for user experience.");
+                unlockTools();
+            }
+        };
+
+        function unlockTools() {
+            lockOverlay.style.display = 'none';
+            mainDashboard.classList.remove('dashboard-locked');
+        }
+
+        // --- TAB LOGIC ---
+        const tabJobBtn = document.getElementById('tab-job-btn');
+        const tabResBtn = document.getElementById('tab-resume-btn');
+        const jobSec = document.getElementById('job-section');
+        const resSec = document.getElementById('resume-section');
+
+        tabJobBtn.onclick = () => { tabJobBtn.classList.add('tab-active'); tabResBtn.classList.remove('tab-active'); jobSec.classList.remove('hidden'); resSec.classList.add('hidden'); };
+        tabResBtn.onclick = () => { tabResBtn.classList.add('tab-active'); tabJobBtn.classList.remove('tab-active'); resSec.classList.remove('hidden'); jobSec.classList.add('hidden'); };
+
+        // --- JOB VERIFIER ---
+        const editor = document.getElementById('job-editor');
+        const SCAM_KEYS = ["regis", "fee", "charg", "deposite", "salry", "paisa", "mony", "ghar baithe"];
+
+        editor.oninput = () => {
+            saveCaret(editor);
+            let text = editor.innerText;
+            SCAM_KEYS.forEach(key => {
+                const regex = new RegExp(`\\b${key}\\w*\\b`, 'gi');
+                text = text.replace(regex, (match) => `<span class="scam-typo">${match}</span>`);
+            });
+            editor.innerHTML = text;
+            restoreCaret(editor);
+        };
+
+        document.getElementById('verify-job-btn').onclick = () => {
+            const text = editor.innerText.toLowerCase();
+            const resDiv = document.getElementById('job-result');
+            let risk = 0; let flags = [];
+            
+            if (/(fee|regist|charg|depo|invest|paisa|mony|ghar baithe)/i.test(text)) { risk = 100; flags.push("Financial Flag: High risk scam markers found."); }
+            if (/(high salary|easy money|typing job|no experience)/i.test(text)) { risk = Math.max(risk, 60); flags.push("Baiting: Unrealistic job promises detected."); }
+            if (text.includes("@gmail.com") || text.includes("whatsapp only")) { risk = Math.max(risk, 40); flags.push("Unprofessional: Generic contact details used."); }
+
+            resDiv.classList.remove('hidden');
+            document.getElementById('job-flags').innerHTML = flags.map(f => `<li><i class="fas fa-exclamation-triangle text-red-500 mr-2"></i> ${f}</li>`).join('');
+            
+            if (risk >= 80) {
+                resDiv.className = "reveal-up p-10 rounded-[3rem] border-b-[15px] shadow-2xl bg-red-50 border-red-500";
+                document.getElementById('job-badge').innerText = "🚨 High Risk Scam Detected";
+                document.getElementById('job-badge').className = "px-6 py-3 rounded-xl font-black text-white bg-red-600 uppercase";
+                document.getElementById('job-score-text').innerText = "9.9/10";
+                document.getElementById('job-advice').innerText = "Absolute Alert. This matches known fraud patterns. Never pay for any job registration.";
+            } else if (risk >= 40) {
+                resDiv.className = "reveal-up p-10 rounded-[3rem] border-b-[15px] shadow-2xl bg-amber-50 border-amber-500";
+                document.getElementById('job-badge').innerText = "⚠️ Suspicious / Caution";
+                document.getElementById('job-badge').className = "px-6 py-3 rounded-xl font-black text-white bg-amber-600 uppercase";
+                document.getElementById('job-score-text').innerText = "5.5/10";
+                document.getElementById('job-advice').innerText = "Proceed with extreme caution. Professional firms use corporate emails.";
+            } else {
+                resDiv.className = "reveal-up p-10 rounded-[3rem] border-b-[15px] shadow-2xl bg-emerald-50 border-emerald-500";
+                document.getElementById('job-badge').innerText = "✅ Looks Authentic";
+                document.getElementById('job-badge').className = "px-6 py-3 rounded-xl font-black text-white bg-emerald-600 uppercase";
+                document.getElementById('job-score-text').innerText = "0.4/10";
+                document.getElementById('job-advice').innerText = "No common red flags found. The wording seems professional.";
+            }
+            window.scrollTo({ top: resDiv.offsetTop - 100, behavior: 'smooth' });
+        };
+
+        // --- RESUME SCANNER ---
+        let pdfText = "";
+        const dropZone = document.getElementById('drop-zone');
+        const pdfInput = document.getElementById('pdf-input');
+        dropZone.onclick = () => pdfInput.click();
+        pdfInput.onchange = (e) => handleFile(e.target.files[0]);
+
+        async function handleFile(file) {
+            if (!file || file.type !== "application/pdf") return;
+            document.getElementById('pdf-name').innerText = "📄 Selected: " + file.name;
+            const reader = new FileReader();
+            reader.onload = async function() {
+                const typedarray = new Uint8Array(this.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                let text = "";
+                for(let i=1; i<=pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const content = await page.getTextContent();
+                    text += content.items.map(item => item.str).join(" ");
+                }
+                pdfText = text;
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        document.getElementById('scan-resume-btn').onclick = () => {
+            if (!pdfText) return alert("Upload a PDF resume first.");
+            let score = 40; let pros = []; let cons = [];
+            const lowText = pdfText.toLowerCase();
+
+            if (/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}/.test(lowText)) {
+                if (/(cool|king|angel|smart|boy|girl)/.test(lowText)) { score -= 10; cons.push("Unprofessional Email Name"); }
+                else { score += 15; pros.push("Professional Email address used"); }
+            } else { score -= 10; cons.push("No Contact Email detected"); }
+
+            ["education", "experience", "skills", "projects", "languages"].forEach(h => {
+                if (lowText.includes(h)) { score += 10; pros.push(`Section Found: ${h.toUpperCase()}`); }
+                else { cons.push(`Missing Section: ${h.toUpperCase()}`); }
+            });
+
+            score = Math.min(score, 100);
+            document.getElementById('resume-result').classList.remove('hidden');
+            document.getElementById('score-pct').innerText = score + "%";
+            document.getElementById('score-circle').style.strokeDashoffset = 264 - (264 * score / 100);
+            document.getElementById('resume-verdict').innerText = score > 75 ? "Hire Ready" : "Weak Structure";
+            document.getElementById('resume-pros').innerHTML = pros.map(p => `<li><i class="fas fa-check mr-2"></i>${p}</li>`).join('');
+            document.getElementById('resume-cons').innerHTML = cons.map(c => `<li><i class="fas fa-times mr-2"></i>${c}</li>`).join('');
+            window.scrollTo({ top: document.getElementById('resume-result').offsetTop - 100, behavior: 'smooth' });
+        };
+
+        // --- CARET HELPERS ---
+        let caretPos;
+        function saveCaret(el) {
+            const sel = window.getSelection();
+            if (sel.rangeCount > 0) caretPos = sel.getRangeAt(0);
+        }
+        function restoreCaret(el) {
+            if (caretPos) {
+                const sel = window.getSelection();
+                sel.removeAllRanges();
+                sel.addRange(caretPos);
+            }
+        }
+    </script>
+</body>
+</html>
