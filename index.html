@@ -92,10 +92,10 @@
         <section id="atsSection" class="w-full glass-card rounded-2xl p-6 md:p-8 shadow-2xl transition-all duration-300 hidden">
             <div class="text-center max-w-xl mx-auto mb-8">
                 <h2 class="text-2xl font-bold text-white mb-1">KnowledgeMentor ATS Smart Guard</h2>
-                <h3 class="text-sm font-semibold text-purple-400 mb-3">(CV Rule Checker System)</h3>
+                <h3 class="text-sm font-semibold text-purple-400 mb-3">(Universal CV Analyzer)</h3>
                 <p class="text-xs text-gray-400">
-                    Upload your CV in PDF format. Our local system will evaluate it against corporate rules.<br>
-                    <span class="text-gray-500">(Apni CV PDF format mein upload karein. Hamara local scanner check karega ke aapki CV standard rules par poori utarti hai ya nahi.)</span>
+                    Upload your CV in PDF format. Our cross-field system reviews layout structure and industrial keywords.<br>
+                    <span class="text-gray-500">(Apni CV PDF format mein upload karein. Hamara system aapki field ke mutabiq layout aur keywords check karega.)</span>
                 </p>
             </div>
 
@@ -109,13 +109,13 @@
                         <div>
                             <p class="text-sm font-medium text-gray-300">Select your CV or Drag & Drop</p>
                             <p class="text-xs text-gray-500 mt-1">(Apni CV File Select Karein)</p>
-                            <p class="text-[11px] text-purple-400 mt-2 font-semibold">Only PDF format allowed (Max 5MB)</p>
+                            <p class="text-[11px] text-purple-400 mt-2 font-semibold">All Professional Domains Supported (Max 5MB)</p>
                         </div>
                     </div>
                     <div id="atsLoading" class="hidden text-center space-y-3">
                         <i class="fa-solid fa-spinner text-purple-400 text-3xl animate-spin"></i>
-                        <p class="text-sm text-purple-300 font-medium">Extracting data locally & reviewing ATS guidelines...</p>
-                        <p class="text-xs text-purple-400/70">(CV ka data read ho raha hai aur rules check kiye ja rahe hain...)</p>
+                        <p class="text-sm text-purple-300 font-medium">Analyzing layout & tracking field-specific vocabulary matrices...</p>
+                        <p class="text-xs text-purple-400/70">(CV ki design aur aapki field ke keywords scan kiye ja rahe hain...)</p>
                     </div>
                 </div>
 
@@ -124,8 +124,8 @@
                     <i class="fa-solid fa-circle-exclamation text-base mt-0.5"></i>
                     <div>
                         <span class="font-bold block">❌ This Document is Not a CV / Resume!</span>
-                        <span class="block text-gray-400 mt-0.5">We detected that this file is an assignment, book, or billing receipt. Please upload a standard profile containing sections like Experience, Education, or Skills.</span>
-                        <span class="block text-red-300 italic mt-1">(Yeh file CV nahi lag rahi! System ne isko reject kardiya hai. Meharbani karke apni actual CV standard format mein upload karein.)</span>
+                        <span class="block text-gray-400 mt-0.5">We detected that this file lacks basic standard professional elements. Please upload a profile containing structural career information.</span>
+                        <span class="block text-red-300 italic mt-1">(Yeh file standard CV nahi lag rahi! System ne reject kardiya hai. Meharbani karke valid file upload karein.)</span>
                     </div>
                 </div>
 
@@ -172,9 +172,7 @@
             }
         }
 
-        // CORRECTED VOICE ROUTER: Triggered explicitly by user streams
         function playVoiceGuide(type) {
-            // FIXED TARTEEB: 'scam' plays scamAudio, 'cv' plays cvAudio
             let activeAudio = (type === 'scam') ? scamAudio : cvAudio;
             let fallbackSrc = (type === 'scam') ? './scam_alert.mp3' : './cv_alert.mp3';
             
@@ -184,7 +182,7 @@
                 }
                 activeAudio.currentTime = 0;
                 activeAudio.play().then(() => {
-                    console.log("Audio dispatched successfully on right channel.");
+                    console.log("Audio dispatched successfully.");
                 }).catch(error => {
                     console.log("Audio trigger failed:", error);
                 });
@@ -326,17 +324,15 @@
                         const fullCVText = pagesText.join(' ');
                         const lowercaseCV = fullCVText.toLowerCase();
                         
-                        // STRICT RESUME VALIDATOR (Checks heavy industry markers to block books/assignments)
+                        // Structural Anchors Check
                         const coreResumeMarkers = ['experience', 'education', 'skills', 'projects', 'summary', 'phone', 'email', 'contact', 'work history', 'qualification', 'languages', 'certifications', 'profile'];
                         
-                        // Count how many different core sections are actually present
                         let matches = 0;
                         coreResumeMarkers.forEach(marker => {
                             if (lowercaseCV.includes(marker)) matches++;
                         });
 
-                        // Strict Guard Rule: If it doesn't contain at least 4 profile milestones, it's NOT a resume!
-                        if (matches < 4) {
+                        if (matches < 3) {
                             document.getElementById('atsLoading').classList.add('hidden');
                             document.getElementById('dropzoneInner').classList.remove('hidden');
                             document.getElementById('documentTypeError').classList.remove('hidden');
@@ -356,108 +352,139 @@
         function evaluateCVText(text, pages) {
             const lowerText = text.toLowerCase();
             let report = [];
-            let score = 100;
+            
+            // Baseline initialization
+            let baseScore = 40;
 
-            const fancyPatterns = ['★', '❖', '●', '■', '♦', '📊', '📈', '🎯'];
-            let fancyFound = fancyPatterns.filter(sym => text.includes(sym));
-            if (fancyFound.length > 0) { 
-                score -= 15; 
+            // CROSS-FIELD ATS KEYWORD DICTIONARY
+            const domains = {
+                logistics: ['inventory', 'procurement', 'warehouse', 'shipping', 'fleet', 'logistics', 'supply chain', 'routing', 'dispatch', 'freight', 'vendor', 'distribution'],
+                finance: ['audit', 'ledger', 'compliance', 'tax', 'budgeting', 'forecasting', 'equity', 'accounts', 'invoice', 'balance sheet', 'reconciliation', 'financial'],
+                hr_ops: ['recruitment', 'payroll', 'onboarding', 'kpi', 'policy', 'employee relations', 'performance', 'operations', 'training', 'talent', 'resource'],
+                marketing: ['seo', 'campaign', 'roi', 'conversion', 'lead generation', 'b2b', 'analytics', 'social media', 'advertising', 'brand', 'content', 'growth'],
+                tech: ['react', 'javascript', 'node', 'python', 'sql', 'git', 'github', 'tailwind', 'api', 'dashboard', 'deployment', 'software', 'developer', 'aws']
+            };
+
+            // Detect target domain by finding highest match frequency
+            let detectedDomain = 'General Professional';
+            let maxMatches = 0;
+
+            for(let domain in domains) {
+                let matches = domains[domain].filter(kw => lowerText.includes(kw)).length;
+                if(matches > maxMatches) {
+                    maxMatches = matches;
+                    detectedDomain = domain.toUpperCase().replace('_', ' ');
+                }
+            }
+
+            // Grant dynamic keyword points depending on detected vocabulary match density
+            let keywordWeight = Math.min(maxMatches * 5, 25);
+            baseScore += keywordWeight;
+
+            // Impact Matrix Weight (Percentages, Figures, KPIs)
+            const globalMetrics = ['%', 'rs.', 'usd', 'achieved', 'optimized', 'scaled', 'reduced', 'led', 'managed', 'increased', 'decreased', 'kpi', 'revenue', 'delivered'];
+            let foundMetrics = globalMetrics.filter(m => lowerText.includes(m));
+            let metricsWeight = Math.min(foundMetrics.length * 5, 20);
+            baseScore += metricsWeight;
+
+            // STRUCTURAL & LAYOUT ATS SANITY RULES
+            const toxicSymbols = ['★', '❖', '●', '■', '♦', '📊', '📈', '🎯'];
+            let foundToxic = toxicSymbols.filter(sym => text.includes(sym));
+            if (foundToxic.length > 0) { 
+                baseScore -= 15; 
                 report.push({ 
-                    day: "Rule 1", 
-                    rule: "Layout & Formatting", 
+                    rule: "Formatting Layout Check", 
                     status: "fail", 
-                    msgEng: "Fancy graphics or shapes detected. Use clean standard bullet layout instead.",
-                    msgUrdu: "CV mein fancy graphics aur icons mile hain. ATS machine inhein read nahi karti, simple design use karein."
+                    msgEng: "Non-standard custom icons or shapes flagged. System engines reject non-text matrix nodes.",
+                    msgUrdu: "CV mein fancy shapes ya graphical symbols mile hain. ATS system inhein parse nahi kar pata, simple layout rakhein."
                 }); 
             } else { 
+                baseScore += 5;
                 report.push({ 
-                    day: "Rule 1", 
-                    rule: "Layout & Formatting", 
+                    rule: "Formatting Layout Check", 
                     status: "pass", 
-                    msgEng: "Clean text layout grid verified.", 
-                    msgUrdu: "Aapki CV ka basic design text format ke mutabiq theek aur clean hai."
+                    msgEng: "Standard text parser formatting layout verified.", 
+                    msgUrdu: "Aapki CV ka basic format text-friendly aur clean hai."
                 }); 
             }
 
-            if (lowerText.includes('challenging position') || lowerText.includes('utilize my skills')) {
-                score -= 20; 
+            if (lowerText.includes('challenging position') || lowerText.includes('utilize my skills') || lowerText.includes('seeking an entry level opportunity')) {
+                baseScore -= 10; 
                 report.push({ 
-                    day: "Rule 2", 
-                    rule: "Professional Summary Formula", 
+                    rule: "Objective Statement Check", 
                     status: "fail", 
-                    msgEng: "Outdated generic career objective detected. Replace with an identity summary statement.",
-                    msgUrdu: "Purani aur har jagah use hone wali common objective line mili hai. Iski jagah apni solid identity statement likhein."
+                    msgEng: "Generic career objective syntax found. Replace with a dynamic summary highlighting quantifiable value.",
+                    msgUrdu: "Purani aur common objective line mili hai. Isko hata kar direct apni field ki specialized summary likhein."
                 });
             } else { 
+                baseScore += 5;
                 report.push({ 
-                    day: "Rule 2", 
-                    rule: "Professional Summary Formula", 
+                    rule: "Objective Statement Check", 
                     status: "pass", 
-                    msgEng: "Value-oriented profile syntax detected.", 
-                    msgUrdu: "Aapka summary ka andaz professional aur behtar lag raha hai."
+                    msgEng: "Targeted focus profile header layout confirmed.", 
+                    msgUrdu: "Aapka header section ya summary block modern ATS parameters ke mutabiq hai."
                 }); 
             }
 
-            const kachraWords = ['hardworking', 'punctual', 'team player', 'fast learner', 'self motivated'];
-            let foundKachra = kachraWords.filter(word => lowerText.includes(word));
-            if (foundKachra.length > 1) {
-                score -= 15; 
+            const fluffBuzzwords = ['hardworking', 'punctual', 'team player', 'fast learner', 'self motivated', 'honest'];
+            let foundFluff = fluffBuzzwords.filter(word => lowerText.includes(word));
+            if (foundFluff.length > 1) {
+                baseScore -= 10; 
                 report.push({ 
-                    day: "Rule 3", 
-                    rule: "Core Skills / Fluff Filters", 
+                    rule: "Core Professional Skills Review", 
                     status: "fail", 
-                    msgEng: `Fluff keywords detected: (${foundKachra.join(', ')}). Delete them and add technical hard skills.`,
-                    msgUrdu: `CV mein faltu ke tareefi words hain: (${foundKachra.join(', ')}). Inhein hata kar actual software skills ya tools ke naam likhein.`
+                    msgEng: `Vague soft skills detected: (${foundFluff.join(', ')}). Replace with core domain methodologies and explicit tools.`,
+                    msgUrdu: `CV mein generic tareefi lafz hain: (${foundFluff.join(', ')}). Inhein hata kar apni field ke tools ya functional frameworks likhein.`
                 });
             } else { 
+                baseScore += 5;
                 report.push({ 
-                    day: "Rule 3", 
-                    rule: "Core Skills / Fluff Filters", 
+                    rule: "Core Professional Skills Review", 
                     status: "pass", 
-                    msgEng: "No generic fluff keywords found. Solid hard skill presentation.", 
-                    msgUrdu: "Faltu ke tareefi words nahi hain. Skills block industry standard ke mutabiq hai."
+                    msgEng: "Core competencies map directly to industrial execution skills.", 
+                    msgUrdu: "Faltu soft-skills buzzwords nahi hain, direct professional competencies likhi hain."
                 }); 
             }
 
-            if (lowerText.includes('responsible for')) {
-                score -= 15; 
+            if (lowerText.includes('responsible for') || lowerText.includes('duties included')) {
+                baseScore -= 10; 
                 report.push({ 
-                    day: "Rule 4", 
-                    rule: "Achievements Architecture", 
+                    rule: "Action Verb Architecture", 
                     status: "fail", 
-                    msgEng: "'Responsible for' syntax detected. Structure your bullet points using CAR metric formulas.",
-                    msgUrdu: "CV mein 'Responsible for' likha mila hai. Isko hata kar apna impact metrics (numbers) ke sath dikhein."
+                    msgEng: "Passive 'Responsible for' syntax tracked. Rewrite using direct action verbs (e.g., Audited, Coordinated, Managed).",
+                    msgUrdu: "Work experience mein passive wording 'Responsible for' mili hai. Isko direct action verbs se tabdeel karein."
                 });
             } else { 
+                baseScore += 5;
                 report.push({ 
-                    day: "Rule 4", 
-                    rule: "Achievements Architecture", 
+                    rule: "Action Verb Architecture", 
                     status: "pass", 
-                    msgEng: "Action verb metrics verified successfully.", 
-                    msgUrdu: "Work experience mein direct actions aur clear elements mojud hain."
+                    msgEng: "Strong active operational performance syntax verified.", 
+                    msgUrdu: "Aapki responsibilities ka structure direct dynamic actions ko show kar rha hai."
                 }); 
             }
 
-            if(score < 40) score = 40;
+            // Score boundary caps
+            if(baseScore > 100) baseScore = 100;
+            if(baseScore < 30) baseScore = 30;
 
             document.getElementById('atsLoading').classList.add('hidden');
             document.getElementById('dropzoneInner').classList.remove('hidden');
             
             const resContainer = document.getElementById('atsResult');
             resContainer.classList.remove('hidden');
-            let scoreColor = score >= 75 ? 'text-emerald-400' : (score >= 55 ? 'text-amber-400' : 'text-red-400');
+            let scoreColor = baseScore >= 75 ? 'text-emerald-400' : (baseScore >= 55 ? 'text-amber-400' : 'text-red-400');
 
             resContainer.innerHTML = `
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center pb-4 border-b border-gray-800 gap-3">
                     <div>
                         <h4 class="text-md font-bold text-white">KnowledgeMentor Smart Report Card</h4>
-                        <p class="text-[11px] text-gray-500">Live Client-Side Document Vector Analysis</p>
-                        <p class="text-[10px] text-purple-400 font-medium">(Aapki CV ka Result Report Card)</p>
+                        <p class="text-[11px] text-purple-400 font-semibold">Detected Sector: <span class="text-white bg-purple-950 px-2 py-0.5 rounded border border-purple-800/50">${detectedDomain}</span></p>
                     </div>
                     <div class="text-right flex items-center justify-between sm:justify-end space-x-3 w-full sm:w-auto">
-                        ${score < 75 ? `<button onclick="playVoiceGuide('cv')" class="px-3 py-2 bg-purple-600 text-white rounded-lg text-xs font-bold flex items-center space-x-1 cursor-pointer shadow-lg animate-pulse"><i class="fa-solid fa-volume-high"></i> <span>Listen Voice Guide (Sunein)</span></button>` : ''}
+                        ${baseScore < 75 ? `<button onclick="playVoiceGuide('cv')" class="px-3 py-2 bg-purple-600 text-white rounded-lg text-xs font-bold flex items-center space-x-1 cursor-pointer shadow-lg animate-bounce"><i class="fa-solid fa-volume-high"></i> <span>Listen Voice Guide (Sunein)</span></button>` : ''}
                         <div>
-                            <div class="text-2xl font-black ${scoreColor}">${score}/100</div>
+                            <div class="text-2xl font-black ${scoreColor}">${baseScore}/100</div>
                         </div>
                     </div>
                 </div>
@@ -466,7 +493,7 @@
                         <div class="p-4 bg-gray-900/60 rounded-xl border ${r.status === 'pass' ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400' : 'border-red-500/10 bg-red-500/5 text-red-400'} flex items-start space-x-3">
                             <div class="mt-0.5">${r.status === 'pass' ? '<i class="fa-solid fa-circle-check text-base"></i>' : '<i class="fa-solid fa-triangle-exclamation text-base"></i>'}</div>
                             <div class="space-y-1">
-                                <h5 class="text-xs font-bold text-white uppercase tracking-wider">${r.day}: ${r.rule}</h5>
+                                <h5 class="text-xs font-bold text-white uppercase tracking-wider">${r.rule}</h5>
                                 <p class="text-xs text-gray-200 font-medium">${r.msgEng}</p>
                                 <p class="text-xs text-gray-400 italic">${r.msgUrdu}</p>
                             </div>
@@ -476,24 +503,48 @@
                 <div class="pt-4 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-3">
                     <button onclick="downloadHammadTemplate()" class="w-full sm:w-auto text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-4 py-2.5 rounded-xl flex flex-col items-center justify-center shadow-lg cursor-pointer">
                         <div class="flex items-center space-x-2">
-                            <i class="fa-solid fa-file-arrow-down"></i> <span>Download Hammad Bhai's ATS Template</span>
+                            <i class="fa-solid fa-file-arrow-down"></i> <span>Download Official ATS Master Template</span>
                         </div>
                         <span class="text-[9px] font-normal opacity-80">(Standard Format CV Download Karein)</span>
                     </button>
-                    <a href="https://api.whatsapp.com/send?text=Mene+Hammad+Bhai+ke+Smart+Tool+par+apni+CV+scan+ki+aur+mera+score+${score}/100+aaya!+Aap+bhi+real-time+ATS+check+karo:+${encodeURIComponent(window.location.href)}" target="_blank" class="w-full sm:w-auto text-xs font-bold text-center bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-all flex flex-col items-center justify-center shadow-md">
+                    <a href="https://api.whatsapp.com/send?text=Mene+KnowledgeMentor+Smart+Tool+par+apni+CV+scan+ki+aur+mera+score+${baseScore}/100+aaya!+Aap+bhi+real-time+ATS+check+karo:+${encodeURIComponent(window.location.href)}" target="_blank" class="w-full sm:w-auto text-xs font-bold text-center bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-all flex flex-col items-center justify-center shadow-md">
                         <div><i class="fa-brands fa-whatsapp mr-1"></i> Share Score</div>
                         <span class="text-[9px] opacity-80 font-normal">(Score WhatsApp Par Share Karein)</span>
                     </a>
                 </div>
             `;
+
+            // CRITICAL REQUIREMENT: Trigger the sound automatically if the score fails to cross the 75 threshold
+            if (baseScore < 75) {
+                playVoiceGuide('cv');
+            }
         }
 
         function downloadHammadTemplate() {
-            const templateText = `MOHAMMAD HAMMAD\nComputer Science Student | Community Builder\nKarachi, Pakistan\nmohammadhammad14h@gmail.com | linkedin.com/in/mohammad-hammad-csS\n\n[PROFESSIONAL SUMMARY]\nComputer Science student and tech-driven community leader who founded and scaled Knowledge Mentor Pakistan's scam-free job-alert network from zero to 1,800+ active members. Built and deployed two production-grade tools (a Job Verifier Web App via GitHub/Vercel + Google Sheets API) that eliminate fake advertisements.\n\n[TECHNICAL SKILLS]\n- Languages & Frameworks: JavaScript (Node.js), HTML/CSS, React (Fundamentals)\n- Deployment & Tools: GitHub, Vercel, Google Sheets API\n\n[WORK EXPERIENCE]\nFounder & Community Manager | KnowledgeMentor (2025 - Present)\n- Scaled WhatsApp job-seeker community from 0 to 1,800+ active members.\n- Achieved 100% advertisement verification rate by vetting jobs via HR networks.`;
+            const templateText = `FIRSTNAME LASTNAME
+City, Pakistan | +92 300 0000000 | email@domain.com | linkedin.com/in/username
+
+PROFESSIONAL SUMMARY
+Results-driven professional with a proven track record of optimizing operational efficiency and execution models across core target scopes. Expert in managing cross-functional tasks, standardizing data pipelines, and implementing data-driven key metrics (KPIs) to scale strategic team output.
+
+CORE COMPETENCIES & KEY TOOLS
+- Operational Strategies & Execution
+- Project Management & Lifecycle Tracking
+- Data Governance & Metric Reporting
+- Professional Documentation Layouts
+
+PROFESSIONAL EXPERIENCE
+Job Title / Specialist Role | Organization Name (2025 - Present)
+- Spearheaded operational execution tasks, achieving a 15% increase in baseline output metrics.
+- Optimized internal workflow structures, reducing manual tracking errors by utilizing standardized metric models.
+- Managed a corporate asset allocation flow, delivering weekly performance logs directly to stakeholders.
+
+EDUCATION
+Degree Name / Domain Field | Institute Name | Graduation Date`;
             
             const blob = new Blob([templateText], { type: 'text/plain' });
             const anchor = document.createElement('a');
-            anchor.download = 'Hammad_Bhai_ATS_Friendly_Template.txt';
+            anchor.download = 'KnowledgeMentor_Universal_ATS_Template.txt';
             anchor.href = window.URL.createObjectURL(blob);
             anchor.click();
         }
