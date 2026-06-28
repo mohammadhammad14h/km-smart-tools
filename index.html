@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KnowledgeMentor - Smart AI Recruiter & Scammer Filter</title>
+    <title>KnowledgeMentor - Universal Guard Engine</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
@@ -17,13 +17,17 @@
             25% { transform: translateX(-6px); }
             75% { transform: translateX(6px); }
         }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between selection:bg-sky-500/30">
 
-    <header class="w-full max-w-6xl mx-auto px-4 py-6 flex justify-between items-center border-b border-gray-800">
+    <!-- HEADER BRANDING -->
+    <header class="w-full max-w-6xl mx-auto px-4 py-6 flex justify-between items-center border-b border-gray-800/60">
         <div class="flex items-center space-x-3">
-            <div id="fallback-icon" class="p-2.5 bg-sky-500/10 rounded-xl border border-sky-500/30">
+            <div class="p-2.5 bg-sky-500/10 rounded-xl border border-sky-500/30">
                 <i class="fa-solid fa-graduation-cap text-sky-400 text-xl"></i>
             </div>
             <div>
@@ -33,109 +37,100 @@
         </div>
         <div class="flex items-center space-x-2 text-xs text-gray-400 bg-gray-900/50 px-3 py-1.5 rounded-full border border-gray-800">
             <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-            <span>100% Local Guard Engine</span>
+            <span class="font-medium tracking-wide">100% Local Guard Engine</span>
         </div>
     </header>
 
-    <!-- Audio Elements Reference -->
     <audio id="audioScam" src="scam_alert.mp3" preload="auto"></audio>
     <audio id="audioCV" src="cv_alert.mp3" preload="auto"></audio>
 
+    <!-- MAIN APP CONTROLLER -->
     <main class="flex-grow w-full max-w-4xl mx-auto px-4 py-10 flex flex-col justify-center items-center">
         
-        <div class="flex bg-gray-950 p-1.5 rounded-xl border border-gray-800 mb-8 w-full max-w-md">
-            <button onclick="switchTab('scam')" id="scamTabBtn" class="flex-1 py-2.5 rounded-lg text-xs font-semibold transition-all duration-300 flex flex-col items-center justify-center bg-sky-500 text-white shadow-lg shadow-sky-500/10">
+        <!-- NAVIGATION TABS -->
+        <div class="flex bg-gray-950 p-1.5 rounded-xl border border-gray-800/80 mb-8 w-full max-w-md shadow-2xl">
+            <button onclick="switchTab('scam')" id="scamTabBtn" class="flex-1 py-3 rounded-lg text-xs font-bold transition-all bg-sky-500 text-white shadow-lg cursor-pointer flex flex-col items-center justify-center">
                 <div><i class="fa-solid fa-shield-halved mr-1"></i> Job Scam Filter</div>
-                <span class="text-[9px] opacity-80">(Job Dhoka Filter)</span>
+                <span class="text-[9px] opacity-70 font-normal">(Job Dhoka Filter)</span>
             </button>
-            <button onclick="switchTab('ats')" id="atsTabBtn" class="flex-1 py-2.5 rounded-lg text-xs font-semibold transition-all duration-300 flex flex-col items-center justify-center text-gray-400 hover:text-white">
+            <button onclick="switchTab('ats')" id="atsTabBtn" class="flex-1 py-3 rounded-lg text-xs font-bold transition-all text-gray-400 hover:text-gray-200 cursor-pointer flex flex-col items-center justify-center">
                 <div><i class="fa-solid fa-file-invoice mr-1"></i> ATS CV Reviewer</div>
-                <span class="text-[9px] opacity-60">(CV Check Karne Wala)</span>
+                <span class="text-[9px] opacity-50 font-normal">(CV Check Karne Wala)</span>
             </button>
         </div>
 
-        <!-- SCAM FILTER SECTION -->
-        <section id="scamSection" class="w-full glass-card rounded-2xl p-6 md:p-8 shadow-2xl transition-all duration-300">
+        <!-- SCAM FILTER MODAL -->
+        <section id="scamSection" class="w-full glass-card rounded-2xl p-6 md:p-8 shadow-2xl transition-all">
             <div class="text-center max-w-xl mx-auto mb-8">
-                <h2 class="text-xl md:text-2xl font-bold text-white mb-2">Fake or Genuine? Find Out Instantly!</h2>
-                <h3 class="text-sm md:text-base font-semibold text-sky-400 mb-3">(Fake Ya Genuine? Abhi Pata Chalega!)</h3>
-                <p class="text-xs text-gray-400">
-                    Paste the full job details from WhatsApp, Facebook, or LinkedIn below.<br>
-                    <span class="text-gray-500">(WhatsApp par aane wali job ki details ya kisi bhi Facebook/LinkedIn post ka poora text neeche paste karein.)</span>
-                </p>
+                <h2 class="text-xl md:text-2xl font-black text-white mb-1.5">Fake or Genuine? Find Out Instantly!</h2>
+                <h3 class="text-xs md:text-sm font-semibold text-sky-400 mb-4">(Fake Ya Genuine? Abhi Pata Chalega!)</h3>
+                <p class="text-xs text-gray-400">Paste job text from WhatsApp, Facebook, or LinkedIn below to scan.</p>
             </div>
 
             <div class="space-y-4">
                 <div id="scamInputWrapper">
-                    <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                        Paste Job Message / Description <span class="text-gray-500 block text-[10px] normal-case mt-0.5">(Job Ka Message Yahan Paste Karein)</span>
-                    </label>
-                    <textarea id="jobText" rows="6" placeholder="Example: Ghar baithe online typing ka kaam karein, daily payment 2000... security deposit raw material ke liye lazmi hai..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all"></textarea>
-                    <div class="flex justify-between items-center mt-1">
-                        <span id="charCount" class="text-xs text-gray-600">0 characters</span>
-                        <span id="validationError" class="text-xs text-red-400 font-medium hidden"></span>
+                    <textarea id="jobText" rows="6" placeholder="Example: Ghar baithe online typing ka kaam karein, security deposit lazmi hai..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-sky-500 transition-all custom-scrollbar"></textarea>
+                    <div class="flex justify-between items-center mt-1.5 px-1">
+                        <span id="charCount" class="text-[11px] text-gray-500">0 characters</span>
+                        <span id="validationError" class="text-[11px] text-red-400 font-semibold hidden"></span>
                     </div>
                 </div>
-
-                <button onclick="analyzeJobScam()" class="w-full bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-semibold py-3.5 rounded-xl transition-all shadow-lg shadow-sky-500/20 active:scale-[0.99] flex flex-col items-center justify-center cursor-pointer">
-                    <div class="flex items-center space-x-2 text-sm">
-                        <i class="fa-solid fa-magnifying-glass-chart"></i> <span>Scan Advertisement</span>
-                    </div>
-                    <span class="text-[10px] font-normal opacity-80">(Isko Check Karein)</span>
+                <button onclick="analyzeJobScam()" class="w-full bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-bold py-4 rounded-xl shadow-xl text-sm cursor-pointer active:scale-[0.99] transition-all">
+                    <i class="fa-solid fa-magnifying-glass-chart mr-1.5"></i> Scan Advertisement (Check Karein)
                 </button>
             </div>
-
-            <div id="scamResult" class="mt-8 hidden p-6 rounded-xl border transition-all duration-300"></div>
+            <div id="scamResult" class="mt-8 hidden p-6 rounded-xl border transition-all"></div>
         </section>
 
-        <!-- ATS CV FILTER SECTION -->
-        <section id="atsSection" class="w-full glass-card rounded-2xl p-6 md:p-8 shadow-2xl transition-all duration-300 hidden">
+        <!-- ATS CV MODAL -->
+        <section id="atsSection" class="w-full glass-card rounded-2xl p-6 md:p-8 shadow-2xl transition-all hidden">
             <div class="text-center max-w-xl mx-auto mb-8">
-                <h2 class="text-2xl font-bold text-white mb-1">KnowledgeMentor ATS Smart Guard</h2>
-                <h3 class="text-sm font-semibold text-purple-400 mb-3">(Universal CV Analyzer)</h3>
-                <p class="text-xs text-gray-400">
-                    Upload your CV in PDF format. Our cross-field system reviews layout structure and industrial keywords.<br>
-                    <span class="text-gray-500">(Apni CV PDF format mein upload karein. Hamara system aapki field ke mutabiq layout aur keywords check karega.)</span>
+                <h2 class="text-2xl font-black text-white mb-1.5">KnowledgeMentor ATS Smart Guard</h2>
+                <h3 class="text-xs font-bold text-purple-400 uppercase tracking-widest mb-4">(Strict Layout Structural Analyzer)</h3>
+                <p class="text-xs text-gray-400 leading-relaxed">
+                    Upload your profile in any text/document format (.pdf, .docx, .doc, .txt, .rtf). <br>
+                    <span class="text-purple-300/90 font-medium block mt-2 p-2 bg-purple-950/20 border border-purple-900/40 rounded-lg">
+                        ⚠️ WARNING: Multi-column architectures, sidebars, stylized grids, or fancy profiles will be penalized automatically to protect true ATS parsing alignment.
+                    </span>
                 </p>
             </div>
 
             <div class="space-y-6">
-                <div id="dropzone" class="border-2 border-dashed border-gray-800 hover:border-purple-500/50 bg-gray-950/40 rounded-xl p-8 transition-all flex flex-col items-center justify-center cursor-pointer group">
-                    <input type="file" id="cvFile" accept=".pdf" class="hidden" onchange="handleFileSelect(event)">
-                    <div id="dropzoneInner" class="text-center space-y-3" onclick="document.getElementById('cvFile').click()">
-                        <div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center border border-purple-500/20 mx-auto group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-cloud-arrow-up text-purple-400 text-xl"></i>
+                <div id="dropzone" class="border-2 border-dashed border-gray-800 hover:border-purple-500/40 bg-gray-950/40 rounded-xl p-8 transition-all flex flex-col items-center justify-center cursor-pointer group">
+                    <input type="file" id="cvFile" accept=".pdf,.docx,.doc,.txt,.rtf" class="hidden" onchange="processDocumentInput(event)">
+                    
+                    <div id="dropzoneInner" class="text-center space-y-3.5 w-full" onclick="document.getElementById('cvFile').click()">
+                        <div class="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center border border-purple-500/20 mx-auto group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-cloud-arrow-up text-purple-400 text-2xl"></i>
                         </div>
                         <div>
-                            <p class="text-sm font-medium text-gray-300">Select your CV or Drag & Drop</p>
-                            <p class="text-xs text-gray-500 mt-1">(Apni CV File Select Karein)</p>
-                            <p class="text-[11px] text-purple-400 mt-2 font-semibold">All Professional Domains Supported (Max 5MB)</p>
+                            <p class="text-sm font-semibold text-gray-200">Select Document File or Drag & Drop Here</p>
+                            <p class="text-xs text-gray-500 mt-0.5">(Apni CV File Upload Karein)</p>
                         </div>
                     </div>
-                    <div id="atsLoading" class="hidden text-center space-y-3">
-                        <i class="fa-solid fa-spinner text-purple-400 text-3xl animate-spin"></i>
-                        <p class="text-sm text-purple-300 font-medium">Analyzing layout & tracking field-specific vocabulary matrices...</p>
-                        <p class="text-xs text-purple-400/70">(CV ki design aur aapki field ke keywords scan kiye ja rahe hain...)</p>
+
+                    <div id="atsLoading" class="hidden text-center space-y-4 py-4">
+                        <i class="fa-solid fa-spinner text-purple-500 text-4xl animate-spin"></i>
+                        <p class="text-sm text-purple-300 font-bold">Vetting structural grids & validating profile lines...</p>
                     </div>
                 </div>
 
-                <!-- Custom Client Side Error Alert for Wrong Documents -->
-                <div id="documentTypeError" class="hidden p-4 bg-red-950/40 border border-red-500/30 rounded-xl text-red-400 text-xs flex items-start space-x-2">
+                <!-- Custom Client Side Error Alert for Non-CV files -->
+                <div id="documentTypeError" class="hidden p-4 bg-red-950/40 border border-red-500/30 rounded-xl text-red-400 text-xs flex items-start space-x-3 shadow-lg">
                     <i class="fa-solid fa-circle-exclamation text-base mt-0.5"></i>
                     <div>
-                        <span class="font-bold block">❌ This Document is Not a CV / Resume!</span>
-                        <span class="block text-gray-400 mt-0.5">We detected that this file lacks basic standard professional elements. Please upload a profile containing structural career information.</span>
-                        <span class="block text-red-300 italic mt-1">(Yeh file standard CV nahi lag rahi! System ne reject kardiya hai. Meharbani karke valid file upload karein.)</span>
+                        <span class="font-extrabold text-sm block">❌ Processing Rejected: This Document is NOT a CV / Resume!</span>
+                        <span class="block text-gray-300 text-[11px] mt-0.5">The system checked the file content and found it lacks professional profile structure anchors (Experience, Skills, Education, etc.).</span>
+                        <span class="block text-red-300 italic font-medium mt-1">(Yeh file standard CV nahi hai! System ne reject kar diya hai.)</span>
                     </div>
                 </div>
 
-                <div id="atsResult" class="mt-8 hidden p-6 rounded-xl border bg-gray-950/70 border-gray-800 space-y-6"></div>
+                <div id="atsResult" class="mt-8 hidden p-6 rounded-xl border bg-gray-950/70 border-gray-800/80 space-y-6"></div>
             </div>
         </section>
-
     </main>
 
-    <footer class="w-full text-center py-6 border-t border-gray-900 text-xs text-gray-500 bg-gray-950/20">
+    <footer class="w-full text-center py-6 border-t border-gray-900 text-[11px] text-gray-500 bg-gray-950/40">
         <p>&copy; 2026 KnowledgeMentor Hub. Developed for Pakistani Jobseekers by Mohammad Hammad.</p>
     </footer>
 
@@ -147,10 +142,6 @@
 
         document.getElementById('jobText').addEventListener('input', function() {
             document.getElementById('charCount').innerText = this.value.length + " characters";
-            if(this.value.length >= 25) {
-                document.getElementById('scamInputWrapper').classList.remove('shaking');
-                document.getElementById('validationError').classList.add('hidden');
-            }
         });
 
         function switchTab(type) {
@@ -160,13 +151,13 @@
             const atsSec = document.getElementById('atsSection');
 
             if(type === 'scam') {
-                scamTab.className = "flex-1 py-2.5 rounded-lg text-xs font-semibold transition-all duration-300 flex flex-col items-center justify-center bg-sky-500 text-white shadow-lg shadow-sky-500/10";
-                atsTab.className = "flex-1 py-2.5 rounded-lg text-xs font-semibold transition-all duration-300 flex flex-col items-center justify-center text-gray-400 hover:text-white";
+                scamTab.className = "flex-1 py-3 rounded-lg text-xs font-bold bg-sky-500 text-white shadow-lg cursor-pointer flex flex-col items-center justify-center";
+                atsTab.className = "flex-1 py-3 rounded-lg text-xs font-bold text-gray-400 hover:text-gray-200 cursor-pointer flex flex-col items-center justify-center";
                 scamSec.classList.remove('hidden');
                 atsSec.classList.add('hidden');
             } else {
-                atsTab.className = "flex-1 py-2.5 rounded-lg text-xs font-semibold transition-all duration-300 flex flex-col items-center justify-center bg-purple-600 text-white shadow-lg shadow-purple-600/10";
-                scamTab.className = "flex-1 py-2.5 rounded-lg text-xs font-semibold transition-all duration-300 flex flex-col items-center justify-center text-gray-400 hover:text-white";
+                atsTab.className = "flex-1 py-3 rounded-lg text-xs font-bold bg-purple-600 text-white shadow-lg cursor-pointer flex flex-col items-center justify-center";
+                scamTab.className = "flex-1 py-3 rounded-lg text-xs font-bold text-gray-400 hover:text-gray-200 cursor-pointer flex flex-col items-center justify-center";
                 atsSec.classList.remove('hidden');
                 scamSec.classList.add('hidden');
             }
@@ -174,18 +165,9 @@
 
         function playVoiceGuide(type) {
             let activeAudio = (type === 'scam') ? scamAudio : cvAudio;
-            let fallbackSrc = (type === 'scam') ? './scam_alert.mp3' : './cv_alert.mp3';
-            
             if (activeAudio) {
-                if (!activeAudio.src || activeAudio.src.includes('undefined')) {
-                    activeAudio.src = fallbackSrc;
-                }
                 activeAudio.currentTime = 0;
-                activeAudio.play().then(() => {
-                    console.log("Audio dispatched successfully.");
-                }).catch(error => {
-                    console.log("Audio trigger failed:", error);
-                });
+                activeAudio.play().catch(e => console.log("Audio deferred"));
             }
         }
 
@@ -193,360 +175,195 @@
             const rawText = document.getElementById('jobText').value.trim();
             const resultBox = document.getElementById('scamResult');
             const errorText = document.getElementById('validationError');
-            const wrapper = document.getElementById('scamInputWrapper');
 
-            const hasWords = rawText.match(/[a-zA-Z]{3,}/g);
-            if (rawText.length < 25 || !hasWords || hasWords.length < 4) {
-                wrapper.classList.add('shaking');
-                errorText.innerHTML = `
-                    <span>❌ Invalid Details! Please provide standard details.</span><br>
-                    <span class="text-[11px] text-red-300/80">(Ghalat Details! Random alfaz ya bohot chota message check nahi ho sakta.)</span>
-                `;
+            if (rawText.length < 25) {
+                errorText.innerText = "❌ Details block is too short!";
                 errorText.classList.remove('hidden');
-                resultBox.classList.add('hidden');
                 return;
             }
-            
             errorText.classList.add('hidden');
-            wrapper.classList.remove('shaking');
 
             const text = rawText.toLowerCase();
-            const scamTriggers = {
-                financial: ['fee', 'fees', 'deposit', 'charges', 'paisa', 'pese', 'money', 'security', 'investment', 'easypaisa', 'jazzcash', 'bikash', 'registration fee', 'training charges'],
-                wording: ['ghar baithe', 'online earning', 'typing ka kaam', 'typing job', 'daily payment', 'bina experience', 'bina investment', 'form filling', 'sms sending', 'data entry task', 'package design'],
-                unprofessional: ['whatsapp only', 'no interview', 'direct selection', 'urgent hiring in bulk', 'send message fast', 'contact immediately'],
-                genericMail: ['@gmail.com', '@yahoo.com', '@outlook.com', '@hotmail.com']
-            };
+            let score = 0;
+            if (text.includes('fee') || text.includes('deposit') || text.includes('charges') || text.includes('paisa')) score += 40;
+            if (text.includes('ghar baithe') || text.includes('typing')) score += 30;
+            if (text.includes('whatsapp only') || text.includes('urgent hiring')) score += 30;
 
-            let detectedTriggers = [];
-            let threatScore = 0;
-
-            for (let category in scamTriggers) {
-                scamTriggers[category].forEach(keyword => {
-                    if (text.includes(keyword)) {
-                        detectedTriggers.push(keyword);
-                        if (category === 'financial') threatScore += 35;
-                        if (category === 'wording') threatScore += 25;
-                        if (category === 'unprofessional') threatScore += 15;
-                        if (category === 'genericMail') threatScore += 20;
-                    }
-                });
-            }
-
-            if(threatScore > 100) threatScore = 100;
-
+            if (score > 100) score = 100;
             resultBox.classList.remove('hidden');
-            resultBox.className = "mt-8 p-6 rounded-xl border transition-all duration-300 ";
-
-            let meterColor = 'bg-emerald-500';
-            let statusTextEng = 'SAFE / GENERIC';
-            let statusTextUrdu = 'SAFE / AAM ADVERTISEMENT';
-            let alertStyle = 'bg-emerald-950/30 border-emerald-500/30 text-emerald-400';
-
-            if (threatScore >= 60) {
-                meterColor = 'bg-red-500 animate-pulse';
-                statusTextEng = 'HIGH RISK SCAM! <i class="fa-solid fa-triangle-exclamation animate-bounce"></i>';
-                statusTextUrdu = 'BOHOT BADA DHOKA (SCAM)!';
-                alertStyle = 'bg-red-950/40 border-red-500/30 text-red-400';
-            } else if (threatScore >= 25) {
-                meterColor = 'bg-amber-500';
-                statusTextEng = 'SUSPICIOUS AD';
-                statusTextUrdu = 'SHAKKI VIGYAPAN / MASHKOOK AD';
-                alertStyle = 'bg-amber-950/30 border-amber-500/30 text-amber-400';
-            }
-
-            resultBox.classList.add(alertStyle.split(' ')[0], alertStyle.split(' ')[1]);
             
-            let messageContent = (threatScore >= 60) ? `
-                <span class="block font-semibold">Warning: This description contains fraudulent elements commonly used by online scammers. DO NOT pay any registration or material fee!</span>
-                <span class="block text-xs text-red-300 mt-1 font-medium">(Hoshiyar Rahein: Is ad mein fraud signs mile hain jo dhoke-baaz log use karte hain. Kisi ko bhi aik rupya bhi fee na dein!)</span>
-            ` : `
-                <span class="block">No major scam indicators detected, but always verify details carefully before applying.</span>
-                <span class="block text-xs text-emerald-300 mt-1 font-medium">(Hamein koi bada scam trigger nahi mila, magar apni safety ke liye check karte rahein.)</span>
-            `;
-
-            resultBox.innerHTML = `
-                <div class="space-y-4">
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                        <div>
-                            <h3 class="text-sm font-black uppercase tracking-wider text-white">${statusTextEng} (${threatScore}%)</h3>
-                            <h4 class="text-xs font-bold opacity-90">${statusTextUrdu}</h4>
-                        </div>
-                        ${threatScore >= 60 ? `<button onclick="playVoiceGuide('scam')" class="w-full sm:w-auto px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 cursor-pointer shadow-lg animate-pulse"><i class="fa-solid fa-volume-high"></i> <span>Listen Audio Guide (Sunein)</span></button>` : ''}
-                    </div>
-                    <div class="w-full bg-gray-900 h-3 rounded-full overflow-hidden border border-gray-800">
-                        <div class="h-full ${meterColor} transition-all duration-500" style="width: ${threatScore === 0 ? '5%' : threatScore + '%'}"></div>
-                    </div>
-                    <div class="text-xs leading-relaxed">${messageContent}</div>
-                    ${detectedTriggers.length > 0 ? `
-                    <div class="text-[11px] text-gray-400">
-                        <span class="font-bold block mb-1">Flags Detected (Pakde Gaye Alfaz):</span>
-                        ${detectedTriggers.map(t => `<span class="inline-block bg-gray-950 px-2 py-0.5 rounded border border-gray-800 mr-1 mb-1 text-red-300">"${t}"</span>`).join('')}
-                    </div>` : ''}
-                    <div class="pt-3 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-2">
-                        ${threatScore >= 60 ? `
-                        <a href="https://wa.me/923282202685?text=Scam+Alert!+Mene+KnowledgeMentor+tool+par+yeh+scam+detect+kia+hai:+${encodeURIComponent(rawText.substring(0,150))}..." target="_blank" class="w-full sm:w-auto text-xs font-bold bg-red-600/20 text-red-400 border border-red-500/30 px-3 py-2 rounded-lg flex items-center justify-center space-x-1 hover:bg-red-600 hover:text-white transition-all">
-                            <i class="fa-solid fa-headset"></i> <span>Report to KnowledgeMentor Community</span>
-                        </a>` : '<div></div>'}
-                        <a href="https://api.whatsapp.com/send?text=Yaar+yeh+kamaal+ka+tool+hai!+Kisi+bi+job+ad+ko+paste+karo+toh+yeh+uska+scam+risk+meter+check+kar+leta+hai.+Aap+bhi+check+karo:+${encodeURIComponent(window.location.href)}" target="_blank" class="w-full sm:w-auto text-xs font-semibold bg-emerald-600 text-white px-3 py-2 rounded-lg flex items-center justify-center space-x-1 hover:bg-emerald-700 transition-all text-center">
-                            <i class="fa-brands fa-whatsapp"></i> <span>Share Status</span>
-                        </a>
-                    </div>
-                </div>
-            `;
+            if (score >= 60) {
+                resultBox.className = "mt-8 p-6 rounded-xl border bg-red-950/40 border-red-500/30 text-red-400";
+                resultBox.innerHTML = `<h4 class="font-black text-sm">⚠️ HIGH RISK SCAM (${score}%)</h4><p class="text-xs text-gray-200 mt-1">Do not send any money!</p>`;
+                playVoiceGuide('scam');
+            } else {
+                resultBox.className = "mt-8 p-6 rounded-xl border bg-emerald-950/30 border-emerald-500/30 text-emerald-400";
+                resultBox.innerHTML = `<h4 class="font-bold text-sm">✅ SAFE ADVERTISEMENT (${score}%)</h4>`;
+            }
         }
 
-        function handleFileSelect(event) {
+        function processDocumentInput(event) {
             const file = event.target.files[0];
-            if (!file || file.type !== 'application/pdf') return;
+            if (!file) return;
 
             document.getElementById('documentTypeError').classList.add('hidden');
             document.getElementById('atsResult').classList.add('hidden');
             document.getElementById('dropzoneInner').classList.add('hidden');
             document.getElementById('atsLoading').classList.remove('hidden');
 
-            const reader = new FileReader();
-            reader.onload = function() {
-                const typedarray = new Uint8Array(this.result);
-                pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
-                    let totalPages = pdf.numPages;
-                    let countPromises = [];
-                    
-                    for (let i = 1; i <= totalPages; i++) {
-                        countPromises.push(pdf.getPage(i).then(page => {
-                            return page.getTextContent().then(textContent => {
-                                return textContent.items.map(item => item.str).join(' ');
-                            });
-                        }));
-                    }
+            if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    const typedarray = new Uint8Array(this.result);
+                    pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
+                        let totalPages = pdf.numPages;
+                        let countPromises = [];
+                        let isMultiColumnDetected = false;
 
-                    Promise.all(countPromises).then(pagesText => {
-                        const fullCVText = pagesText.join(' ');
-                        const lowercaseCV = fullCVText.toLowerCase();
-                        
-                        // Structural Anchors Check
-                        const coreResumeMarkers = ['experience', 'education', 'skills', 'projects', 'summary', 'phone', 'email', 'contact', 'work history', 'qualification', 'languages', 'certifications', 'profile'];
-                        
-                        let matches = 0;
-                        coreResumeMarkers.forEach(marker => {
-                            if (lowercaseCV.includes(marker)) matches++;
-                        });
-
-                        if (matches < 3) {
-                            document.getElementById('atsLoading').classList.add('hidden');
-                            document.getElementById('dropzoneInner').classList.remove('hidden');
-                            document.getElementById('documentTypeError').classList.remove('hidden');
-                            return;
+                        for (let i = 1; i <= totalPages; i++) {
+                            countPromises.push(pdf.getPage(i).then(page => {
+                                return page.getTextContent().then(textContent => {
+                                    let items = textContent.items;
+                                    let xPositions = items.map(item => item.transform[4]).filter(x => x > 0);
+                                    let leftChannel = xPositions.filter(x => x < 220).length;
+                                    let rightChannel = xPositions.filter(x => x > 280).length;
+                                    if(leftChannel > 6 && rightChannel > 6) {
+                                        isMultiColumnDetected = true;
+                                    }
+                                    return items.map(item => item.str).join(' ');
+                                });
+                            }));
                         }
-
-                        evaluateCVText(fullCVText, totalPages);
-                    });
-                }).catch(() => {
-                    document.getElementById('atsLoading').classList.add('hidden');
-                    document.getElementById('dropzoneInner').classList.remove('hidden');
-                });
-            };
-            reader.readAsArrayBuffer(file);
+                        Promise.all(countPromises).then(pagesText => {
+                            validateCVAndScore(pagesText.join(' '), isMultiColumnDetected);
+                        }).catch(fallbackToTextEngine);
+                    }).catch(fallbackToTextEngine);
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    validateCVAndScore(e.target.result, false);
+                };
+                reader.readAsText(file);
+            }
         }
 
-        function evaluateCVText(text, pages) {
+        function fallbackToTextEngine() {
+            document.getElementById('atsLoading').classList.add('hidden');
+            document.getElementById('dropzoneInner').classList.remove('hidden');
+            document.getElementById('documentTypeError').classList.remove('hidden');
+            playVoiceGuide('cv');
+        }
+
+        function validateCVAndScore(text, isMultiColumn) {
             const lowerText = text.toLowerCase();
-            let report = [];
             
-            // Baseline initialization
-            let baseScore = 40;
+            // 1. MANDATORY CV VALIDATION PROTOCOL (Strict Profile Check)
+            const structuralAnchors = ['experience', 'education', 'skills', 'projects', 'summary', 'phone', 'email', 'contact', 'qualification', 'languages', 'certifications'];
+            let matchedAnchors = structuralAnchors.filter(anchor => lowerText.includes(anchor)).length;
 
-            // CROSS-FIELD ATS KEYWORD DICTIONARY
-            const domains = {
-                logistics: ['inventory', 'procurement', 'warehouse', 'shipping', 'fleet', 'logistics', 'supply chain', 'routing', 'dispatch', 'freight', 'vendor', 'distribution'],
-                finance: ['audit', 'ledger', 'compliance', 'tax', 'budgeting', 'forecasting', 'equity', 'accounts', 'invoice', 'balance sheet', 'reconciliation', 'financial'],
-                hr_ops: ['recruitment', 'payroll', 'onboarding', 'kpi', 'policy', 'employee relations', 'performance', 'operations', 'training', 'talent', 'resource'],
-                marketing: ['seo', 'campaign', 'roi', 'conversion', 'lead generation', 'b2b', 'analytics', 'social media', 'advertising', 'brand', 'content', 'growth'],
-                tech: ['react', 'javascript', 'node', 'python', 'sql', 'git', 'github', 'tailwind', 'api', 'dashboard', 'deployment', 'software', 'developer', 'aws']
-            };
-
-            // Detect target domain by finding highest match frequency
-            let detectedDomain = 'General Professional';
-            let maxMatches = 0;
-
-            for(let domain in domains) {
-                let matches = domains[domain].filter(kw => lowerText.includes(kw)).length;
-                if(matches > maxMatches) {
-                    maxMatches = matches;
-                    detectedDomain = domain.toUpperCase().replace('_', ' ');
-                }
+            // Agar 5 se kam sections milte hain toh yeh CV nahi hai, reject straight away!
+            if (matchedAnchors < 5) {
+                fallbackToTextEngine();
+                return;
             }
 
-            // Grant dynamic keyword points depending on detected vocabulary match density
-            let keywordWeight = Math.min(maxMatches * 5, 25);
-            baseScore += keywordWeight;
+            let score = 100; // Optimal Baseline
+            let report = [];
 
-            // Impact Matrix Weight (Percentages, Figures, KPIs)
-            const globalMetrics = ['%', 'rs.', 'usd', 'achieved', 'optimized', 'scaled', 'reduced', 'led', 'managed', 'increased', 'decreased', 'kpi', 'revenue', 'delivered'];
-            let foundMetrics = globalMetrics.filter(m => lowerText.includes(m));
-            let metricsWeight = Math.min(foundMetrics.length * 5, 20);
-            baseScore += metricsWeight;
+            // 2. ABSOLUTE COLUMN AND STYLISH DETECTOR GRID LOCK
+            // Check text-based patterns commonly found in stylized templates
+            const stylePatterns = ['sidebar', 'skills grid', 'column-2', 'right panel', 'left panel', 'profile picture', 'resume template', '||', '•  •'];
+            let hasStylingPhrases = stylePatterns.some(pattern => lowerText.includes(pattern));
 
-            // STRUCTURAL & LAYOUT ATS SANITY RULES
-            const toxicSymbols = ['★', '❖', '●', '■', '♦', '📊', '📈', '🎯'];
-            let foundToxic = toxicSymbols.filter(sym => text.includes(sym));
-            if (foundToxic.length > 0) { 
-                baseScore -= 15; 
-                report.push({ 
-                    rule: "Formatting Layout Check", 
-                    status: "fail", 
-                    msgEng: "Non-standard custom icons or shapes flagged. System engines reject non-text matrix nodes.",
-                    msgUrdu: "CV mein fancy shapes ya graphical symbols mile hain. ATS system inhein parse nahi kar pata, simple layout rakhein."
-                }); 
-            } else { 
-                baseScore += 5;
-                report.push({ 
-                    rule: "Formatting Layout Check", 
-                    status: "pass", 
-                    msgEng: "Standard text parser formatting layout verified.", 
-                    msgUrdu: "Aapki CV ka basic format text-friendly aur clean hai."
-                }); 
-            }
-
-            if (lowerText.includes('challenging position') || lowerText.includes('utilize my skills') || lowerText.includes('seeking an entry level opportunity')) {
-                baseScore -= 10; 
-                report.push({ 
-                    rule: "Objective Statement Check", 
-                    status: "fail", 
-                    msgEng: "Generic career objective syntax found. Replace with a dynamic summary highlighting quantifiable value.",
-                    msgUrdu: "Purani aur common objective line mili hai. Isko hata kar direct apni field ki specialized summary likhein."
+            if (isMultiColumn || hasStylingPhrases) {
+                score -= 45; // Automatic heavy penalty! Stylish layouts cannot get 100/100
+                report.push({
+                    rule: "ATS Layout Structural Verification",
+                    status: "fail",
+                    msgEng: "Multi-column layout, stylish panels, or heavy graphics detected. True ATS bots reject this immediately.",
+                    msgUrdu: "CV mein multi-column layout ya stylish panels mile hain. ATS bots isko read nahi kar paate aur fail kar dete hain. Isko simple single-column plain text mein convert karein."
                 });
-            } else { 
-                baseScore += 5;
-                report.push({ 
-                    rule: "Objective Statement Check", 
-                    status: "pass", 
-                    msgEng: "Targeted focus profile header layout confirmed.", 
-                    msgUrdu: "Aapka header section ya summary block modern ATS parameters ke mutabiq hai."
-                }); 
-            }
-
-            const fluffBuzzwords = ['hardworking', 'punctual', 'team player', 'fast learner', 'self motivated', 'honest'];
-            let foundFluff = fluffBuzzwords.filter(word => lowerText.includes(word));
-            if (foundFluff.length > 1) {
-                baseScore -= 10; 
-                report.push({ 
-                    rule: "Core Professional Skills Review", 
-                    status: "fail", 
-                    msgEng: `Vague soft skills detected: (${foundFluff.join(', ')}). Replace with core domain methodologies and explicit tools.`,
-                    msgUrdu: `CV mein generic tareefi lafz hain: (${foundFluff.join(', ')}). Inhein hata kar apni field ke tools ya functional frameworks likhein.`
+            } else {
+                report.push({
+                    rule: "ATS Layout Structural Verification",
+                    status: "pass",
+                    msgEng: "Verified: Single-column linear layout. Perfect 100% compliance.",
+                    msgUrdu: "Behtareen! Aapki CV bilkul straight single-column format mein hai, jo ATS machine ke liye perfect hai."
                 });
-            } else { 
-                baseScore += 5;
-                report.push({ 
-                    rule: "Core Professional Skills Review", 
-                    status: "pass", 
-                    msgEng: "Core competencies map directly to industrial execution skills.", 
-                    msgUrdu: "Faltu soft-skills buzzwords nahi hain, direct professional competencies likhi hain."
-                }); 
             }
 
-            if (lowerText.includes('responsible for') || lowerText.includes('duties included')) {
-                baseScore -= 10; 
-                report.push({ 
-                    rule: "Action Verb Architecture", 
-                    status: "fail", 
-                    msgEng: "Passive 'Responsible for' syntax tracked. Rewrite using direct action verbs (e.g., Audited, Coordinated, Managed).",
-                    msgUrdu: "Work experience mein passive wording 'Responsible for' mili hai. Isko direct action verbs se tabdeel karein."
+            // Keyword density tracker
+            const keywords = ['react', 'javascript', 'node', 'sql', 'git', 'api', 'development', 'software', 'seo', 'marketing', 'operations', 'finance', 'accounts', 'budgeting', 'recruitment', 'payroll'];
+            let matchedKeywords = keywords.filter(kw => lowerText.includes(kw)).length;
+            if (matchedKeywords < 3) {
+                score -= 25;
+                report.push({
+                    rule: "Industrial Vocabulary Check",
+                    status: "fail",
+                    msgEng: "Missing key technical tool keywords for your target field.",
+                    msgUrdu: "Aapki professional domain ke important tools aur keywords missing hain. Apne projects mein use kiye gaye tools add karein."
                 });
-            } else { 
-                baseScore += 5;
-                report.push({ 
-                    rule: "Action Verb Architecture", 
-                    status: "pass", 
-                    msgEng: "Strong active operational performance syntax verified.", 
-                    msgUrdu: "Aapki responsibilities ka structure direct dynamic actions ko show kar rha hai."
-                }); 
             }
 
-            // Score boundary caps
-            if(baseScore > 100) baseScore = 100;
-            if(baseScore < 30) baseScore = 30;
+            // Objective phrase penalty
+            if (lowerText.includes('challenging position') || lowerText.includes('utilize my skills')) {
+                score -= 15;
+                report.push({
+                    rule: "Summary Architecture",
+                    status: "fail",
+                    msgEng: "Outdated Career Objective text found.",
+                    msgUrdu: "Purani objective line hata kar direct 3 lines ka clear Summary likhein."
+                });
+            }
+
+            // Passive word penalty
+            if (lowerText.includes('responsible for')) {
+                score -= 15;
+                report.push({
+                    rule: "Action Verbs Audit",
+                    status: "fail",
+                    msgEng: "Passive terms detected ('Responsible for'). Use active performance keywords.",
+                    msgUrdu: "Passive words badal kar dynamic operational terms use karein."
+                });
+            }
+
+            // Clamp scores safely
+            if (score > 100) score = 100;
+            if (score < 20) score = 20;
 
             document.getElementById('atsLoading').classList.add('hidden');
             document.getElementById('dropzoneInner').classList.remove('hidden');
-            
+
             const resContainer = document.getElementById('atsResult');
             resContainer.classList.remove('hidden');
-            let scoreColor = baseScore >= 75 ? 'text-emerald-400' : (baseScore >= 55 ? 'text-amber-400' : 'text-red-400');
+            let scoreColor = score === 100 ? 'text-emerald-400 font-black' : 'text-red-400';
 
             resContainer.innerHTML = `
-                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center pb-4 border-b border-gray-800 gap-3">
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center pb-5 border-b border-gray-800 gap-3">
                     <div>
-                        <h4 class="text-md font-bold text-white">KnowledgeMentor Smart Report Card</h4>
-                        <p class="text-[11px] text-purple-400 font-semibold">Detected Sector: <span class="text-white bg-purple-950 px-2 py-0.5 rounded border border-purple-800/50">${detectedDomain}</span></p>
+                        <h4 class="text-sm font-extrabold text-white tracking-wider uppercase">KnowledgeMentor Smart Report Card</h4>
                     </div>
-                    <div class="text-right flex items-center justify-between sm:justify-end space-x-3 w-full sm:w-auto">
-                        ${baseScore < 75 ? `<button onclick="playVoiceGuide('cv')" class="px-3 py-2 bg-purple-600 text-white rounded-lg text-xs font-bold flex items-center space-x-1 cursor-pointer shadow-lg animate-bounce"><i class="fa-solid fa-volume-high"></i> <span>Listen Voice Guide (Sunein)</span></button>` : ''}
-                        <div>
-                            <div class="text-2xl font-black ${scoreColor}">${baseScore}/100</div>
-                        </div>
+                    <div class="flex items-center space-x-4">
+                        ${score < 100 ? `<button onclick="playVoiceGuide('cv')" class="px-3 py-2 bg-purple-600 text-white rounded-lg text-xs font-bold cursor-pointer">Sunein (Voice Guide)</button>` : ''}
+                        <div class="text-3xl font-black ${scoreColor}">${score}/100</div>
                     </div>
                 </div>
-                <div class="space-y-3">
+                <div class="space-y-3.5">
                     ${report.map(r => `
-                        <div class="p-4 bg-gray-900/60 rounded-xl border ${r.status === 'pass' ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400' : 'border-red-500/10 bg-red-500/5 text-red-400'} flex items-start space-x-3">
-                            <div class="mt-0.5">${r.status === 'pass' ? '<i class="fa-solid fa-circle-check text-base"></i>' : '<i class="fa-solid fa-triangle-exclamation text-base"></i>'}</div>
+                        <div class="p-4 rounded-xl border ${r.status === 'pass' ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400' : 'border-red-500/10 bg-red-500/5 text-red-400'} flex items-start space-x-3">
                             <div class="space-y-1">
                                 <h5 class="text-xs font-bold text-white uppercase tracking-wider">${r.rule}</h5>
-                                <p class="text-xs text-gray-200 font-medium">${r.msgEng}</p>
+                                <p class="text-xs text-gray-200">${r.msgEng}</p>
                                 <p class="text-xs text-gray-400 italic">${r.msgUrdu}</p>
                             </div>
                         </div>
                     `).join('')}
                 </div>
-                <div class="pt-4 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-3">
-                    <button onclick="downloadHammadTemplate()" class="w-full sm:w-auto text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-4 py-2.5 rounded-xl flex flex-col items-center justify-center shadow-lg cursor-pointer">
-                        <div class="flex items-center space-x-2">
-                            <i class="fa-solid fa-file-arrow-down"></i> <span>Download Official ATS Master Template</span>
-                        </div>
-                        <span class="text-[9px] font-normal opacity-80">(Standard Format CV Download Karein)</span>
-                    </button>
-                    <a href="https://api.whatsapp.com/send?text=Mene+KnowledgeMentor+Smart+Tool+par+apni+CV+scan+ki+aur+mera+score+${baseScore}/100+aaya!+Aap+bhi+real-time+ATS+check+karo:+${encodeURIComponent(window.location.href)}" target="_blank" class="w-full sm:w-auto text-xs font-bold text-center bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-all flex flex-col items-center justify-center shadow-md">
-                        <div><i class="fa-brands fa-whatsapp mr-1"></i> Share Score</div>
-                        <span class="text-[9px] opacity-80 font-normal">(Score WhatsApp Par Share Karein)</span>
-                    </a>
-                </div>
             `;
 
-            // CRITICAL REQUIREMENT: Trigger the sound automatically if the score fails to cross the 75 threshold
-            if (baseScore < 75) {
-                playVoiceGuide('cv');
-            }
-        }
-
-        function downloadHammadTemplate() {
-            const templateText = `FIRSTNAME LASTNAME
-City, Pakistan | +92 300 0000000 | email@domain.com | linkedin.com/in/username
-
-PROFESSIONAL SUMMARY
-Results-driven professional with a proven track record of optimizing operational efficiency and execution models across core target scopes. Expert in managing cross-functional tasks, standardizing data pipelines, and implementing data-driven key metrics (KPIs) to scale strategic team output.
-
-CORE COMPETENCIES & KEY TOOLS
-- Operational Strategies & Execution
-- Project Management & Lifecycle Tracking
-- Data Governance & Metric Reporting
-- Professional Documentation Layouts
-
-PROFESSIONAL EXPERIENCE
-Job Title / Specialist Role | Organization Name (2025 - Present)
-- Spearheaded operational execution tasks, achieving a 15% increase in baseline output metrics.
-- Optimized internal workflow structures, reducing manual tracking errors by utilizing standardized metric models.
-- Managed a corporate asset allocation flow, delivering weekly performance logs directly to stakeholders.
-
-EDUCATION
-Degree Name / Domain Field | Institute Name | Graduation Date`;
-            
-            const blob = new Blob([templateText], { type: 'text/plain' });
-            const anchor = document.createElement('a');
-            anchor.download = 'KnowledgeMentor_Universal_ATS_Template.txt';
-            anchor.href = window.URL.createObjectURL(blob);
-            anchor.click();
+            if (score < 100) playVoiceGuide('cv');
         }
     </script>
 </body>
