@@ -23,7 +23,7 @@
 
     <header class="w-full max-w-6xl mx-auto px-4 py-6 flex justify-between items-center border-b border-gray-800">
         <div class="flex items-center space-x-3">
-            <div class="p-2.5 bg-sky-500/10 rounded-xl border border-sky-500/30">
+            <div id="fallback-icon" class="p-2.5 bg-sky-500/10 rounded-xl border border-sky-500/30">
                 <i class="fa-solid fa-graduation-cap text-sky-400 text-xl"></i>
             </div>
             <div>
@@ -91,8 +91,8 @@
                 <h2 class="text-2xl font-bold text-white mb-1">KnowledgeMentor ATS Smart Guard</h2>
                 <h3 class="text-sm font-semibold text-purple-400 mb-3">(CV Rule Checker System)</h3>
                 <p class="text-xs text-gray-400">
-                    Upload your CV in PDF format. Our local system will evaluate it against 7 critical corporate rules.<br>
-                    <span class="text-gray-500">(Apni CV PDF format mein upload karein. Hamara local scanner check karega ke aapki CV un 7 solid rules par poori utarti hai ya nahi.)</span>
+                    Upload your CV in PDF format. Our local system will evaluate it against corporate rules.<br>
+                    <span class="text-gray-500">(Apni CV PDF format mein upload karein. Hamara local scanner check karega ke aapki CV standard rules par poori utarti hai ya nahi.)</span>
                 </p>
             </div>
 
@@ -129,6 +129,28 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
+        // Audio Elements References
+        const scamAudio = document.getElementById('audioScam');
+        const cvAudio = document.getElementById('audioCV');
+
+        // Global unlock mechanism to handle browser permission restrictions
+        window.addEventListener('click', () => {
+            if (scamAudio) { scamAudio.play().then(() => { scamAudio.pause(); scamAudio.currentTime = 0; }).catch(() => {}); }
+            if (cvAudio) { cvAudio.play().then(() => { cvAudio.pause(); cvAudio.currentTime = 0; }).catch(() => {}); }
+        }, { once: true });
+
+        // Smart logo dynamic detector
+        window.addEventListener('DOMContentLoaded', () => {
+            const logoImg = document.querySelector('header img');
+            const fallbackIcon = document.getElementById('fallback-icon');
+            if (logoImg) {
+                logoImg.addEventListener('error', () => {
+                    logoImg.style.display = 'none';
+                    if (fallbackIcon) fallbackIcon.classList.remove('hidden');
+                });
+            }
+        });
+
         // Real-time text validation
         document.getElementById('jobText').addEventListener('input', function() {
             document.getElementById('charCount').innerText = this.value.length + " characters";
@@ -157,37 +179,21 @@
             }
         }
 
-        // ==========================================================
-        // FIXED VOICE CONTROL ENGINE (Bypasses Browser Restrictions)
-        // ==========================================================
         function playVoiceGuide(type) {
-            const scamAudio = document.getElementById('audioScam');
-            const cvAudio = document.getElementById('audioCV');
-            
             let activeAudio = (type === 'scam') ? scamAudio : cvAudio;
             let fallbackSrc = (type === 'scam') ? './scam_alert.mp3' : './cv_alert.mp3';
             
-            if (!activeAudio.src || activeAudio.src.includes('undefined')) {
-                activeAudio.src = fallbackSrc;
-            }
-            
-            activeAudio.currentTime = 0;
-            
-            let playPromise = activeAudio.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {
-                    console.log("Audio playing successfully from root context.");
-                }).catch(error => {
-                    console.log("Browser interaction block engine detected:", error);
-                    alert("🔊 Audio sunein ke liye pehle screen par kahin bhi ek baar click karein (Please tap anywhere on screen first to unlock audio)!");
+            if (activeAudio) {
+                if (!activeAudio.src || activeAudio.src.includes('undefined')) {
+                    activeAudio.src = fallbackSrc;
+                }
+                activeAudio.currentTime = 0;
+                activeAudio.play().catch(error => {
+                    console.log("Audio lock triggered:", error);
                 });
             }
         }
 
-        // ==========================================
-        // 1. SCAM DETECTOR LOGIC WITH RISK METER
-        // ==========================================
         function analyzeJobScam() {
             const rawText = document.getElementById('jobText').value.trim();
             const resultBox = document.getElementById('scamResult');
@@ -210,7 +216,6 @@
             wrapper.classList.remove('shaking');
 
             const text = rawText.toLowerCase();
-
             const scamTriggers = {
                 financial: ['fee', 'fees', 'deposit', 'charges', 'paisa', 'pese', 'money', 'security', 'investment', 'easypaisa', 'jazzcash', 'bikash', 'registration fee', 'training charges'],
                 wording: ['ghar baithe', 'online earning', 'typing ka kaam', 'typing job', 'daily payment', 'bina experience', 'bina investment', 'form filling', 'sms sending', 'data entry task', 'package design'],
@@ -258,18 +263,13 @@
 
             resultBox.classList.add(alertStyle.split(' ')[0], alertStyle.split(' ')[1]);
             
-            let messageContent = '';
-            if (threatScore >= 60) {
-                messageContent = `
-                    <span class="block font-semibold">Warning: This description contains fraudulent elements commonly used by online scammers. DO NOT pay any registration or material fee!</span>
-                    <span class="block text-xs text-red-300 mt-1 font-medium">(Hoshiyar Rahein: Is ad mein fraud signs mile hain jo dhoke-baaz log use karte hain. Kisi ko bhi aik rupya bhi fee na dein!)</span>
-                `;
-            } else {
-                messageContent = `
-                    <span class="block">No major scam indicators detected, but always verify details carefully before applying.</span>
-                    <span class="block text-xs text-emerald-300 mt-1 font-medium">(Hamein koi bada scam trigger nahi mila, magar apni safety ke liye check karte rahein.)</span>
-                `;
-            }
+            let messageContent = (threatScore >= 60) ? `
+                <span class="block font-semibold">Warning: This description contains fraudulent elements commonly used by online scammers. DO NOT pay any registration or material fee!</span>
+                <span class="block text-xs text-red-300 mt-1 font-medium">(Hoshiyar Rahein: Is ad mein fraud signs mile hain jo dhoke-baaz log use karte hain. Kisi ko bhi aik rupya bhi fee na dein!)</span>
+            ` : `
+                <span class="block">No major scam indicators detected, but always verify details carefully before applying.</span>
+                <span class="block text-xs text-emerald-300 mt-1 font-medium">(Hamein koi bada scam trigger nahi mila, magar apni safety ke liye check karte rahein.)</span>
+            `;
 
             resultBox.innerHTML = `
                 <div class="space-y-4">
@@ -280,33 +280,24 @@
                         </div>
                         ${threatScore >= 60 ? `<button onclick="playVoiceGuide('scam')" class="w-full sm:w-auto px-3 py-1.5 bg-red-500/20 text-red-300 border border-red-500/30 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer"><i class="fa-solid fa-volume-high"></i> <span>Listen Audio Guide (Sunein)</span></button>` : ''}
                     </div>
-                    
                     <div class="w-full bg-gray-900 h-3 rounded-full overflow-hidden border border-gray-800">
                         <div class="h-full ${meterColor} transition-all duration-500" style="width: ${threatScore === 0 ? '5%' : threatScore + '%'}"></div>
                     </div>
-
-                    <div class="text-xs leading-relaxed">
-                        ${messageContent}
-                    </div>
-
+                    <div class="text-xs leading-relaxed">${messageContent}</div>
                     ${detectedTriggers.length > 0 ? `
                     <div class="text-[11px] text-gray-400">
                         <span class="font-bold block mb-1">Flags Detected (Pakde Gaye Alfaz):</span>
                         ${detectedTriggers.map(t => `<span class="inline-block bg-gray-950 px-2 py-0.5 rounded border border-gray-800 mr-1 mb-1 text-red-300">"${t}"</span>`).join('')}
                     </div>` : ''}
-
                     <div class="pt-2 border-t border-gray-800 flex justify-end">
-                        <a href="https://api.whatsapp.com/send?text=Yaar yeh kamaal ka tool hai! Kisi bhi job ad ko paste karo toh yeh uska scam risk meter check kar leta hai. Aap bhi check karo: ${window.location.href}" target="_blank" class="text-xs font-semibold bg-emerald-600/20 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-lg flex items-center space-x-1 hover:bg-emerald-600 hover:text-white transition-all">
-                            <i class="fa-brands fa-whatsapp"></i> <span>Share This Status (Doston ko batayein)</span>
+                        <a href="https://api.whatsapp.com/send?text=Yaar+yeh+kamaal+ka+tool+hai!+Kisi+bi+job+ad+ko+paste+karo+toh+yeh+uska+scam+risk+meter+check+kar+leta+hai.+Aap+bhi+check+karo:+${encodeURIComponent(window.location.href)}" target="_blank" class="text-xs font-semibold bg-emerald-600/20 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-lg flex items-center space-x-1 hover:bg-emerald-600 hover:text-white transition-all">
+                            <i class="fa-brands fa-whatsapp"></i> <span>Share This Status</span>
                         </a>
                     </div>
                 </div>
             `;
         }
 
-        // ==========================================
-        // 2. ATS RESUME REVIEWER ENGINE
-        // ==========================================
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (!file || file.type !== 'application/pdf') return;
@@ -328,8 +319,6 @@
                             });
                         }));
                     }
-
-                    document.body.click(); // Soft-click element reference lock
 
                     Promise.all(countPromises).then(pagesText => {
                         evaluateCVText(pagesText.join(' '), totalPages);
@@ -439,16 +428,14 @@
                     <div>
                         <h4 class="text-md font-bold text-white">KnowledgeMentor Smart Report Card</h4>
                         <p class="text-[11px] text-gray-500">Live Client-Side Document Vector Analysis</p>
-                        <p class="text-[10px] text-purple-400 font-medium">(Aapki CV ka Result Report Card)</p>
                     </div>
                     <div class="text-right flex items-center justify-between sm:justify-end space-x-3 w-full sm:w-auto">
-                        ${score < 75 ? `<button onclick="playVoiceGuide('cv')" class="px-2.5 py-1.5 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg text-xs font-semibold flex items-center space-x-1 cursor-pointer"><i class="fa-solid fa-play"></i> <span>Listen Voice Guide (Sunein)</span></button>` : ''}
+                        ${score < 75 ? `<button onclick="playVoiceGuide('cv')" class="px-2.5 py-1.5 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg text-xs font-semibold flex items-center space-x-1 cursor-pointer"><i class="fa-solid fa-play"></i> <span>Listen Voice Guide</span></button>` : ''}
                         <div>
                             <div class="text-2xl font-black ${scoreColor}">${score}/100</div>
                         </div>
                     </div>
                 </div>
-
                 <div class="space-y-3">
                     ${report.map(r => `
                         <div class="p-4 bg-gray-900/60 rounded-xl border ${r.status === 'pass' ? 'border-emerald-500/10 bg-emerald-500/5 text-emerald-400' : 'border-red-500/10 bg-red-500/5 text-red-400'} flex items-start space-x-3">
@@ -461,17 +448,14 @@
                         </div>
                     `).join('')}
                 </div>
-
                 <div class="pt-4 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-3">
                     <button onclick="downloadHammadTemplate()" class="w-full sm:w-auto text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-4 py-2.5 rounded-xl flex flex-col items-center justify-center shadow-lg cursor-pointer">
                         <div class="flex items-center space-x-2">
                             <i class="fa-solid fa-file-arrow-down"></i> <span>Download Hammad Bhai's ATS Template</span>
                         </div>
-                        <span class="text-[9px] font-normal opacity-80">(Standard Format CV Download Karein)</span>
                     </button>
-                    <a href="https://api.whatsapp.com/send?text=Mene Hammad Bhai ke Smart Tool par apni CV scan ki aur mera score ${score}/100 aaya! Aap bhi real-time ATS check karein: ${window.location.href}" target="_blank" class="w-full sm:w-auto text-xs font-semibold text-center bg-gray-900 border border-gray-800 text-gray-300 px-4 py-2.5 rounded-xl hover:bg-gray-800 transition-all flex flex-col items-center justify-center">
+                    <a href="https://api.whatsapp.com/send?text=Mene+Hammad+Bhai+ke+Smart+Tool+par+apni+CV+scan+ki+aur+mera+score+${score}/100+aaya!+Aap+bhi+real-time+ATS+check+karo:+${encodeURIComponent(window.location.href)}" target="_blank" class="w-full sm:w-auto text-xs font-semibold text-center bg-gray-900 border border-gray-800 text-gray-300 px-4 py-2.5 rounded-xl hover:bg-gray-800 transition-all flex flex-col items-center justify-center">
                         <div><i class="fa-brands fa-whatsapp mr-1"></i> Share Score</div>
-                        <span class="text-[9px] opacity-60 font-normal">(Score WhatsApp Par Share Karein)</span>
                     </a>
                 </div>
             `;
