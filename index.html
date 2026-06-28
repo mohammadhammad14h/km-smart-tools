@@ -7,16 +7,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <!-- Tesseract.js for Local Client-Side Image OCR Scanning -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; color: #f3f4f6; }
         .glass-card { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .shaking { animation: shake 0.4s ease-in-out; }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-6px); }
-            75% { transform: translateX(6px); }
-        }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
@@ -41,6 +37,7 @@
         </div>
     </header>
 
+    <!-- AUDIO NODES -->
     <audio id="audioScam" src="scam_alert.mp3" preload="auto"></audio>
     <audio id="audioCV" src="cv_alert.mp3" preload="auto"></audio>
 
@@ -64,17 +61,31 @@
             <div class="text-center max-w-xl mx-auto mb-8">
                 <h2 class="text-xl md:text-2xl font-black text-white mb-1.5">Fake or Genuine? Find Out Instantly!</h2>
                 <h3 class="text-xs md:text-sm font-semibold text-sky-400 mb-4">(Fake Ya Genuine? Abhi Pata Chalega!)</h3>
-                <p class="text-xs text-gray-400">Paste job text from WhatsApp, Facebook, or LinkedIn below to scan.</p>
+                <p class="text-xs text-gray-400">Paste job text OR upload a Job Poster/Screenshot (.jpg, .jpeg, .png)</p>
             </div>
 
             <div class="space-y-4">
+                <!-- Text Area Input -->
                 <div id="scamInputWrapper">
-                    <textarea id="jobText" rows="6" placeholder="Example: Ghar baithe online typing ka kaam karein, security deposit lazmi hai..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-sky-500 transition-all custom-scrollbar"></textarea>
+                    <textarea id="jobText" rows="5" placeholder="Example: Ghar baithe online typing ka kaam karein, security deposit lazmi hai..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-sky-500 transition-all custom-scrollbar"></textarea>
                     <div class="flex justify-between items-center mt-1.5 px-1">
                         <span id="charCount" class="text-[11px] text-gray-500">0 characters</span>
                         <span id="validationError" class="text-[11px] text-red-400 font-semibold hidden"></span>
                     </div>
                 </div>
+
+                <!-- Poster Image Input Dropzone -->
+                <div id="scamImageZone" class="border border-dashed border-gray-800 bg-gray-950/30 rounded-xl p-4 text-center cursor-pointer hover:border-sky-500/50 transition-all" onclick="document.getElementById('scamFile').click()">
+                    <input type="file" id="scamFile" accept=".jpg,.jpeg,.png" class="hidden" onchange="processScamImage(event)">
+                    <div id="scamZoneInner" class="text-xs text-gray-400 space-y-1">
+                        <p class="font-semibold text-gray-300"><i class="fa-solid fa-image text-sky-400 mr-1.5"></i> Click to Upload Job Poster / Banner</p>
+                        <p class="text-[10px] text-gray-500">(Sirf Jobs ki pictures upload karein)</p>
+                    </div>
+                    <div id="scamLoading" class="hidden text-xs text-sky-400 font-bold animate-pulse">
+                        <i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i> Extracting & scanning image nodes for risk variables...
+                    </div>
+                </div>
+
                 <button onclick="analyzeJobScam()" class="w-full bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-bold py-4 rounded-xl shadow-xl text-sm cursor-pointer active:scale-[0.99] transition-all">
                     <i class="fa-solid fa-magnifying-glass-chart mr-1.5"></i> Scan Advertisement (Check Karein)
                 </button>
@@ -88,7 +99,7 @@
                 <h2 class="text-2xl font-black text-white mb-1.5">KnowledgeMentor ATS Smart Guard</h2>
                 <h3 class="text-xs font-bold text-purple-400 uppercase tracking-widest mb-4">(Strict Layout Structural Analyzer)</h3>
                 <p class="text-xs text-gray-400 leading-relaxed">
-                    Upload your profile in any text/document format (.pdf, .docx, .doc, .txt, .rtf). <br>
+                    Upload your profile in any format (.pdf, .docx, .doc, .txt, .rtf, .jpg, .jpeg, .png). <br>
                     <span class="text-purple-300/90 font-medium block mt-2 p-2 bg-purple-950/20 border border-purple-900/40 rounded-lg">
                         ⚠️ WARNING: Multi-column architectures, sidebars, stylized grids, or fancy profiles will be penalized automatically to protect true ATS parsing alignment.
                     </span>
@@ -97,15 +108,15 @@
 
             <div class="space-y-6">
                 <div id="dropzone" class="border-2 border-dashed border-gray-800 hover:border-purple-500/40 bg-gray-950/40 rounded-xl p-8 transition-all flex flex-col items-center justify-center cursor-pointer group">
-                    <input type="file" id="cvFile" accept=".pdf,.docx,.doc,.txt,.rtf" class="hidden" onchange="processDocumentInput(event)">
+                    <input type="file" id="cvFile" accept=".pdf,.docx,.doc,.txt,.rtf,.jpg,.jpeg,.png" class="hidden" onchange="processDocumentInput(event)">
                     
                     <div id="dropzoneInner" class="text-center space-y-3.5 w-full" onclick="document.getElementById('cvFile').click()">
                         <div class="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center border border-purple-500/20 mx-auto group-hover:scale-110 transition-transform">
                             <i class="fa-solid fa-cloud-arrow-up text-purple-400 text-2xl"></i>
                         </div>
                         <div>
-                            <p class="text-sm font-semibold text-gray-200">Select Document File or Drag & Drop Here</p>
-                            <p class="text-xs text-gray-500 mt-0.5">(Apni CV File Upload Karein)</p>
+                            <p class="text-sm font-semibold text-gray-200">Select Document/Image File or Drag & Drop Here</p>
+                            <p class="text-xs text-gray-500 mt-0.5">(Apni CV File ya Image Upload Karein)</p>
                         </div>
                     </div>
 
@@ -120,7 +131,7 @@
                     <i class="fa-solid fa-circle-exclamation text-base mt-0.5"></i>
                     <div>
                         <span class="font-extrabold text-sm block">❌ Processing Rejected: This Document is NOT a CV / Resume!</span>
-                        <span class="block text-gray-300 text-[11px] mt-0.5">The system checked the file content and found it lacks professional profile structure anchors (Experience, Skills, Education, etc.).</span>
+                        <span class="block text-gray-300 text-[11px] mt-0.5">The system checked the content and found it lacks professional profile structure anchors (Experience, Skills, Education, etc.).</span>
                         <span class="block text-red-300 italic font-medium mt-1">(Yeh file standard CV nahi hai! System ne reject kar diya hai.)</span>
                     </div>
                 </div>
@@ -171,13 +182,40 @@
             }
         }
 
+        // Job Scam Poster Scanning Core Integration
+        function processScamImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            document.getElementById('scamZoneInner').classList.add('hidden');
+            document.getElementById('scamLoading').classList.remove('hidden');
+
+            const reader = new FileReader();
+            reader.onload = function() {
+                Tesseract.recognize(reader.result, 'eng')
+                    .then(({ data: { text } }) => {
+                        document.getElementById('jobText').value = text;
+                        document.getElementById('charCount').innerText = text.length + " characters";
+                        document.getElementById('scamLoading').classList.add('hidden');
+                        document.getElementById('scamZoneInner').classList.remove('hidden');
+                        analyzeJobScam(); // Fire scoring check automatically after processing image
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        document.getElementById('scamLoading').classList.add('hidden');
+                        document.getElementById('scamZoneInner').classList.remove('hidden');
+                    });
+            };
+            reader.readAsDataURL(file);
+        }
+
         function analyzeJobScam() {
             const rawText = document.getElementById('jobText').value.trim();
             const resultBox = document.getElementById('scamResult');
             const errorText = document.getElementById('validationError');
 
             if (rawText.length < 25) {
-                errorText.innerText = "❌ Details block is too short!";
+                errorText.innerText = "❌ Details block or Image text is too short!";
                 errorText.classList.remove('hidden');
                 return;
             }
@@ -185,9 +223,9 @@
 
             const text = rawText.toLowerCase();
             let score = 0;
-            if (text.includes('fee') || text.includes('deposit') || text.includes('charges') || text.includes('paisa')) score += 40;
-            if (text.includes('ghar baithe') || text.includes('typing')) score += 30;
-            if (text.includes('whatsapp only') || text.includes('urgent hiring')) score += 30;
+            if (text.includes('fee') || text.includes('deposit') || text.includes('charges') || text.includes('paisa') || text.includes('form processing')) score += 40;
+            if (text.includes('ghar baithe') || text.includes('typing') || text.includes('sms sending')) score += 30;
+            if (text.includes('whatsapp only') || text.includes('urgent hiring') || text.includes('daily payment')) score += 30;
 
             if (score > 100) score = 100;
             resultBox.classList.remove('hidden');
@@ -210,6 +248,8 @@
             document.getElementById('atsResult').classList.add('hidden');
             document.getElementById('dropzoneInner').classList.add('hidden');
             document.getElementById('atsLoading').classList.remove('hidden');
+
+            const isImage = file.type.startsWith('image/') || file.name.endsWith('.png') || file.name.endsWith('.jpg') || file.name.endsWith('.jpeg');
 
             if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
                 const reader = new FileReader();
@@ -240,6 +280,18 @@
                     }).catch(fallbackToTextEngine);
                 };
                 reader.readAsArrayBuffer(file);
+            } else if (isImage) {
+                // If it's a structural snapshot image (JPEG/PNG Cover)
+                const reader = new FileReader();
+                reader.onload = function() {
+                    Tesseract.recognize(reader.result, 'eng')
+                        .then(({ data: { text } }) => {
+                            // Image parsing layout structurally lacks standard linear stream
+                            validateCVAndScore(text, true); 
+                        })
+                        .catch(fallbackToTextEngine);
+                };
+                reader.readAsDataURL(file);
             } else {
                 const reader = new FileReader();
                 reader.onload = function(e) {
@@ -259,31 +311,29 @@
         function validateCVAndScore(text, isMultiColumn) {
             const lowerText = text.toLowerCase();
             
-            // 1. MANDATORY CV VALIDATION PROTOCOL (Strict Profile Check)
+            // 1. MANDATORY CV VALIDATION PROTOCOL
             const structuralAnchors = ['experience', 'education', 'skills', 'projects', 'summary', 'phone', 'email', 'contact', 'qualification', 'languages', 'certifications'];
             let matchedAnchors = structuralAnchors.filter(anchor => lowerText.includes(anchor)).length;
 
-            // Agar 5 se kam sections milte hain toh yeh CV nahi hai, reject straight away!
             if (matchedAnchors < 5) {
                 fallbackToTextEngine();
                 return;
             }
 
-            let score = 100; // Optimal Baseline
+            let score = 100;
             let report = [];
 
             // 2. ABSOLUTE COLUMN AND STYLISH DETECTOR GRID LOCK
-            // Check text-based patterns commonly found in stylized templates
             const stylePatterns = ['sidebar', 'skills grid', 'column-2', 'right panel', 'left panel', 'profile picture', 'resume template', '||', '•  •'];
             let hasStylingPhrases = stylePatterns.some(pattern => lowerText.includes(pattern));
 
             if (isMultiColumn || hasStylingPhrases) {
-                score -= 45; // Automatic heavy penalty! Stylish layouts cannot get 100/100
+                score -= 45;
                 report.push({
                     rule: "ATS Layout Structural Verification",
                     status: "fail",
-                    msgEng: "Multi-column layout, stylish panels, or heavy graphics detected. True ATS bots reject this immediately.",
-                    msgUrdu: "CV mein multi-column layout ya stylish panels mile hain. ATS bots isko read nahi kar paate aur fail kar dete hain. Isko simple single-column plain text mein convert karein."
+                    msgEng: "Multi-column layout, image grid architecture, or heavy graphics detected. True ATS bots reject this immediately.",
+                    msgUrdu: "CV mein multi-column layout, graphic grids ya screenshot framework mila hai. ATS bots isko structural grid failure ki wajah se reject kar dete hain. Isko simple single-column plain linear layout text format mein convert karein."
                 });
             } else {
                 report.push({
@@ -329,7 +379,6 @@
                 });
             }
 
-            // Clamp scores safely
             if (score > 100) score = 100;
             if (score < 20) score = 20;
 
