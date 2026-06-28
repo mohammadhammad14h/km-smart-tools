@@ -37,6 +37,7 @@
         </div>
     </header>
 
+    <!-- Audio Elements Reference -->
     <audio id="audioScam" src="scam_alert.mp3" preload="auto"></audio>
     <audio id="audioCV" src="cv_alert.mp3" preload="auto"></audio>
 
@@ -53,6 +54,7 @@
             </button>
         </div>
 
+        <!-- SCAM FILTER SECTION -->
         <section id="scamSection" class="w-full glass-card rounded-2xl p-6 md:p-8 shadow-2xl transition-all duration-300">
             <div class="text-center max-w-xl mx-auto mb-8">
                 <h2 class="text-xl md:text-2xl font-bold text-white mb-2">Fake or Genuine? Find Out Instantly!</h2>
@@ -86,6 +88,7 @@
             <div id="scamResult" class="mt-8 hidden p-6 rounded-xl border transition-all duration-300"></div>
         </section>
 
+        <!-- ATS CV FILTER SECTION -->
         <section id="atsSection" class="w-full glass-card rounded-2xl p-6 md:p-8 shadow-2xl transition-all duration-300 hidden">
             <div class="text-center max-w-xl mx-auto mb-8">
                 <h2 class="text-2xl font-bold text-white mb-1">KnowledgeMentor ATS Smart Guard</h2>
@@ -116,6 +119,16 @@
                     </div>
                 </div>
 
+                <!-- Custom Client Side Error Alert for Wrong Documents -->
+                <div id="documentTypeError" class="hidden p-4 bg-red-950/40 border border-red-500/30 rounded-xl text-red-400 text-xs flex items-start space-x-2">
+                    <i class="fa-solid fa-circle-exclamation text-base mt-0.5"></i>
+                    <div>
+                        <span class="font-bold block">❌ This Document is Not a CV / Resume!</span>
+                        <span class="block text-gray-400 mt-0.5">We detected that this file is an assignment, book, or billing receipt. Please upload a standard profile containing sections like Experience, Education, or Skills.</span>
+                        <span class="block text-red-300 italic mt-1">(Yeh file CV nahi lag rahi! System ne isko reject kardiya hai. Meharbani karke apni actual CV standard format mein upload karein.)</span>
+                    </div>
+                </div>
+
                 <div id="atsResult" class="mt-8 hidden p-6 rounded-xl border bg-gray-950/70 border-gray-800 space-y-6"></div>
             </div>
         </section>
@@ -129,29 +142,10 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
-        // Audio Elements References
         const scamAudio = document.getElementById('audioScam');
         const cvAudio = document.getElementById('audioCV');
 
-        // Global unlock mechanism to handle browser permission restrictions
-        window.addEventListener('click', () => {
-            if (scamAudio) { scamAudio.play().then(() => { scamAudio.pause(); scamAudio.currentTime = 0; }).catch(() => {}); }
-            if (cvAudio) { cvAudio.play().then(() => { cvAudio.pause(); cvAudio.currentTime = 0; }).catch(() => {}); }
-        }, { once: true });
-
-        // Smart logo dynamic detector
-        window.addEventListener('DOMContentLoaded', () => {
-            const logoImg = document.querySelector('header img');
-            const fallbackIcon = document.getElementById('fallback-icon');
-            if (logoImg) {
-                logoImg.addEventListener('error', () => {
-                    logoImg.style.display = 'none';
-                    if (fallbackIcon) fallbackIcon.classList.remove('hidden');
-                });
-            }
-        });
-
-        // Real-time text validation
+        // Clean user interface text input triggers
         document.getElementById('jobText').addEventListener('input', function() {
             document.getElementById('charCount').innerText = this.value.length + " characters";
             if(this.value.length >= 25) {
@@ -179,6 +173,7 @@
             }
         }
 
+        // Direct Core Voice Dispatcher (Triggered on Click to bypass rules completely)
         function playVoiceGuide(type) {
             let activeAudio = (type === 'scam') ? scamAudio : cvAudio;
             let fallbackSrc = (type === 'scam') ? './scam_alert.mp3' : './cv_alert.mp3';
@@ -188,8 +183,10 @@
                     activeAudio.src = fallbackSrc;
                 }
                 activeAudio.currentTime = 0;
-                activeAudio.play().catch(error => {
-                    console.log("Audio lock triggered:", error);
+                activeAudio.play().then(() => {
+                    console.log("Audio dispatched successfully via explicit click stream.");
+                }).catch(error => {
+                    console.log("Audio play failed:", error);
                 });
             }
         }
@@ -250,10 +247,9 @@
 
             if (threatScore >= 60) {
                 meterColor = 'bg-red-500 animate-pulse';
-                statusTextEng = 'HIGH RISK SCAM!';
+                statusTextEng = 'HIGH RISK SCAM! <i class="fa-solid fa-triangle-exclamation animate-bounce"></i>';
                 statusTextUrdu = 'BOHOT BADA DHOKA (SCAM)!';
                 alertStyle = 'bg-red-950/40 border-red-500/30 text-red-400';
-                playVoiceGuide('scam');
             } else if (threatScore >= 25) {
                 meterColor = 'bg-amber-500';
                 statusTextEng = 'SUSPICIOUS AD';
@@ -278,7 +274,7 @@
                             <h3 class="text-sm font-black uppercase tracking-wider text-white">${statusTextEng} (${threatScore}%)</h3>
                             <h4 class="text-xs font-bold opacity-90">${statusTextUrdu}</h4>
                         </div>
-                        ${threatScore >= 60 ? `<button onclick="playVoiceGuide('scam')" class="w-full sm:w-auto px-3 py-1.5 bg-red-500/20 text-red-300 border border-red-500/30 rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 cursor-pointer"><i class="fa-solid fa-volume-high"></i> <span>Listen Audio Guide (Sunein)</span></button>` : ''}
+                        ${threatScore >= 60 ? `<button onclick="playVoiceGuide('scam')" class="w-full sm:w-auto px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 cursor-pointer shadow-lg animate-pulse"><i class="fa-solid fa-volume-high"></i> <span>Listen Audio Guide (Sunein)</span></button>` : ''}
                     </div>
                     <div class="w-full bg-gray-900 h-3 rounded-full overflow-hidden border border-gray-800">
                         <div class="h-full ${meterColor} transition-all duration-500" style="width: ${threatScore === 0 ? '5%' : threatScore + '%'}"></div>
@@ -289,9 +285,13 @@
                         <span class="font-bold block mb-1">Flags Detected (Pakde Gaye Alfaz):</span>
                         ${detectedTriggers.map(t => `<span class="inline-block bg-gray-950 px-2 py-0.5 rounded border border-gray-800 mr-1 mb-1 text-red-300">"${t}"</span>`).join('')}
                     </div>` : ''}
-                    <div class="pt-2 border-t border-gray-800 flex justify-end">
-                        <a href="https://api.whatsapp.com/send?text=Yaar+yeh+kamaal+ka+tool+hai!+Kisi+bi+job+ad+ko+paste+karo+toh+yeh+uska+scam+risk+meter+check+kar+leta+hai.+Aap+bhi+check+karo:+${encodeURIComponent(window.location.href)}" target="_blank" class="text-xs font-semibold bg-emerald-600/20 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-lg flex items-center space-x-1 hover:bg-emerald-600 hover:text-white transition-all">
-                            <i class="fa-brands fa-whatsapp"></i> <span>Share This Status</span>
+                    <div class="pt-3 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-2">
+                        ${threatScore >= 60 ? `
+                        <a href="https://wa.me/923282202685?text=Scam+Alert!+Mene+KnowledgeMentor+tool+par+yeh+scam+detect+kia+hai:+${encodeURIComponent(rawText.substring(0,150))}..." target="_blank" class="w-full sm:w-auto text-xs font-bold bg-red-600/20 text-red-400 border border-red-500/30 px-3 py-2 rounded-lg flex items-center justify-center space-x-1 hover:bg-red-600 hover:text-white transition-all">
+                            <i class="fa-solid fa-headset"></i> <span>Report to KnowledgeMentor Community</span>
+                        </a>` : '<div></div>'}
+                        <a href="https://api.whatsapp.com/send?text=Yaar+yeh+kamaal+ka+tool+hai!+Kisi+bi+job+ad+ko+paste+karo+toh+yeh+uska+scam+risk+meter+check+kar+leta+hai.+Aap+bhi+check+karo:+${encodeURIComponent(window.location.href)}" target="_blank" class="w-full sm:w-auto text-xs font-semibold bg-emerald-600 text-white px-3 py-2 rounded-lg flex items-center justify-center space-x-1 hover:bg-emerald-700 transition-all text-center">
+                            <i class="fa-brands fa-whatsapp"></i> <span>Share Status</span>
                         </a>
                     </div>
                 </div>
@@ -302,6 +302,8 @@
             const file = event.target.files[0];
             if (!file || file.type !== 'application/pdf') return;
 
+            document.getElementById('documentTypeError').classList.add('hidden');
+            document.getElementById('atsResult').classList.add('hidden');
             document.getElementById('dropzoneInner').classList.add('hidden');
             document.getElementById('atsLoading').classList.remove('hidden');
 
@@ -321,8 +323,26 @@
                     }
 
                     Promise.all(countPromises).then(pagesText => {
-                        evaluateCVText(pagesText.join(' '), totalPages);
+                        const fullCVText = pagesText.join(' ');
+                        
+                        // STRICT VALIDATOR: Check if document contains genuine resume markers
+                        const lowercaseCV = fullCVText.toLowerCase();
+                        const coreResumeMarkers = ['experience', 'education', 'skills', 'projects', 'summary', 'phone', 'email', 'contact', 'work', 'history', 'qualification', 'tajarba', 'taleem'];
+                        const matchCount = coreResumeMarkers.filter(marker => lowercaseCV.includes(marker)).length;
+
+                        // If it doesn't look like a resume, completely lock it out!
+                        if (matchCount < 2) {
+                            document.getElementById('atsLoading').classList.add('hidden');
+                            document.getElementById('dropzoneInner').classList.remove('hidden');
+                            document.getElementById('documentTypeError').classList.remove('hidden');
+                            return;
+                        }
+
+                        evaluateCVText(fullCVText, totalPages);
                     });
+                }).catch(() => {
+                    document.getElementById('atsLoading').classList.add('hidden');
+                    document.getElementById('dropzoneInner').classList.remove('hidden');
                 });
             };
             reader.readAsArrayBuffer(file);
@@ -414,7 +434,6 @@
             }
 
             if(score < 40) score = 40;
-            if(score < 75) playVoiceGuide('cv');
 
             document.getElementById('atsLoading').classList.add('hidden');
             document.getElementById('dropzoneInner').classList.remove('hidden');
@@ -428,9 +447,10 @@
                     <div>
                         <h4 class="text-md font-bold text-white">KnowledgeMentor Smart Report Card</h4>
                         <p class="text-[11px] text-gray-500">Live Client-Side Document Vector Analysis</p>
+                        <p class="text-[10px] text-purple-400 font-medium">(Aapki CV ka Result Report Card)</p>
                     </div>
                     <div class="text-right flex items-center justify-between sm:justify-end space-x-3 w-full sm:w-auto">
-                        ${score < 75 ? `<button onclick="playVoiceGuide('cv')" class="px-2.5 py-1.5 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg text-xs font-semibold flex items-center space-x-1 cursor-pointer"><i class="fa-solid fa-play"></i> <span>Listen Voice Guide</span></button>` : ''}
+                        ${score < 75 ? `<button onclick="playVoiceGuide('cv')" class="px-3 py-2 bg-purple-600 text-white rounded-lg text-xs font-bold flex items-center space-x-1 cursor-pointer shadow-lg animate-bounce"><i class="fa-solid fa-volume-high"></i> <span>Listen Voice Guide (Sunein)</span></button>` : ''}
                         <div>
                             <div class="text-2xl font-black ${scoreColor}">${score}/100</div>
                         </div>
@@ -453,9 +473,11 @@
                         <div class="flex items-center space-x-2">
                             <i class="fa-solid fa-file-arrow-down"></i> <span>Download Hammad Bhai's ATS Template</span>
                         </div>
+                        <span class="text-[9px] font-normal opacity-80">(Standard Format CV Download Karein)</span>
                     </button>
-                    <a href="https://api.whatsapp.com/send?text=Mene+Hammad+Bhai+ke+Smart+Tool+par+apni+CV+scan+ki+aur+mera+score+${score}/100+aaya!+Aap+bhi+real-time+ATS+check+karo:+${encodeURIComponent(window.location.href)}" target="_blank" class="w-full sm:w-auto text-xs font-semibold text-center bg-gray-900 border border-gray-800 text-gray-300 px-4 py-2.5 rounded-xl hover:bg-gray-800 transition-all flex flex-col items-center justify-center">
+                    <a href="https://api.whatsapp.com/send?text=Mene+Hammad+Bhai+ke+Smart+Tool+par+apni+CV+scan+ki+aur+mera+score+${score}/100+aaya!+Aap+bhi+real-time+ATS+check+karo:+${encodeURIComponent(window.location.href)}" target="_blank" class="w-full sm:w-auto text-xs font-bold text-center bg-emerald-600 text-white px-4 py-2.5 rounded-xl hover:bg-emerald-700 transition-all flex flex-col items-center justify-center shadow-md">
                         <div><i class="fa-brands fa-whatsapp mr-1"></i> Share Score</div>
+                        <span class="text-[9px] opacity-80 font-normal">(Score WhatsApp Par Share Karein)</span>
                     </a>
                 </div>
             `;
