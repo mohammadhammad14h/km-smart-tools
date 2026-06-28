@@ -145,7 +145,6 @@
         const scamAudio = document.getElementById('audioScam');
         const cvAudio = document.getElementById('audioCV');
 
-        // Clean user interface text input triggers
         document.getElementById('jobText').addEventListener('input', function() {
             document.getElementById('charCount').innerText = this.value.length + " characters";
             if(this.value.length >= 25) {
@@ -173,8 +172,9 @@
             }
         }
 
-        // Direct Core Voice Dispatcher (Triggered on Click to bypass rules completely)
+        // CORRECTED VOICE ROUTER: Triggered explicitly by user streams
         function playVoiceGuide(type) {
+            // FIXED TARTEEB: 'scam' plays scamAudio, 'cv' plays cvAudio
             let activeAudio = (type === 'scam') ? scamAudio : cvAudio;
             let fallbackSrc = (type === 'scam') ? './scam_alert.mp3' : './cv_alert.mp3';
             
@@ -184,9 +184,9 @@
                 }
                 activeAudio.currentTime = 0;
                 activeAudio.play().then(() => {
-                    console.log("Audio dispatched successfully via explicit click stream.");
+                    console.log("Audio dispatched successfully on right channel.");
                 }).catch(error => {
-                    console.log("Audio play failed:", error);
+                    console.log("Audio trigger failed:", error);
                 });
             }
         }
@@ -324,14 +324,19 @@
 
                     Promise.all(countPromises).then(pagesText => {
                         const fullCVText = pagesText.join(' ');
-                        
-                        // STRICT VALIDATOR: Check if document contains genuine resume markers
                         const lowercaseCV = fullCVText.toLowerCase();
-                        const coreResumeMarkers = ['experience', 'education', 'skills', 'projects', 'summary', 'phone', 'email', 'contact', 'work', 'history', 'qualification', 'tajarba', 'taleem'];
-                        const matchCount = coreResumeMarkers.filter(marker => lowercaseCV.includes(marker)).length;
+                        
+                        // STRICT RESUME VALIDATOR (Checks heavy industry markers to block books/assignments)
+                        const coreResumeMarkers = ['experience', 'education', 'skills', 'projects', 'summary', 'phone', 'email', 'contact', 'work history', 'qualification', 'languages', 'certifications', 'profile'];
+                        
+                        // Count how many different core sections are actually present
+                        let matches = 0;
+                        coreResumeMarkers.forEach(marker => {
+                            if (lowercaseCV.includes(marker)) matches++;
+                        });
 
-                        // If it doesn't look like a resume, completely lock it out!
-                        if (matchCount < 2) {
+                        // Strict Guard Rule: If it doesn't contain at least 4 profile milestones, it's NOT a resume!
+                        if (matches < 4) {
                             document.getElementById('atsLoading').classList.add('hidden');
                             document.getElementById('dropzoneInner').classList.remove('hidden');
                             document.getElementById('documentTypeError').classList.remove('hidden');
@@ -450,7 +455,7 @@
                         <p class="text-[10px] text-purple-400 font-medium">(Aapki CV ka Result Report Card)</p>
                     </div>
                     <div class="text-right flex items-center justify-between sm:justify-end space-x-3 w-full sm:w-auto">
-                        ${score < 75 ? `<button onclick="playVoiceGuide('cv')" class="px-3 py-2 bg-purple-600 text-white rounded-lg text-xs font-bold flex items-center space-x-1 cursor-pointer shadow-lg animate-bounce"><i class="fa-solid fa-volume-high"></i> <span>Listen Voice Guide (Sunein)</span></button>` : ''}
+                        ${score < 75 ? `<button onclick="playVoiceGuide('cv')" class="px-3 py-2 bg-purple-600 text-white rounded-lg text-xs font-bold flex items-center space-x-1 cursor-pointer shadow-lg animate-pulse"><i class="fa-solid fa-volume-high"></i> <span>Listen Voice Guide (Sunein)</span></button>` : ''}
                         <div>
                             <div class="text-2xl font-black ${scoreColor}">${score}/100</div>
                         </div>
