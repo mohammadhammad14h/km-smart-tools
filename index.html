@@ -86,6 +86,16 @@
                     </div>
                 </div>
 
+                <!-- Custom Client Side Error Alert for Non-Job Posters -->
+                <div id="scamTypeError" class="hidden p-4 bg-red-950/40 border border-red-500/30 rounded-xl text-red-400 text-xs flex items-start space-x-3 shadow-lg">
+                    <i class="fa-solid fa-circle-exclamation text-base mt-0.5"></i>
+                    <div>
+                        <span class="font-extrabold text-sm block">❌ Processing Rejected: This Image is NOT a Job Advertisement!</span>
+                        <span class="block text-gray-300 text-[11px] mt-0.5">The system verified the image content and found it lacks job structural anchors or hiring contextual phrases.</span>
+                        <span class="block text-red-300 italic font-medium mt-1">(Yeh picture kisi job ki nahi hai! System ne reject kar diya hai.)</span>
+                    </div>
+                </div>
+
                 <button onclick="analyzeJobScam()" class="w-full bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-bold py-4 rounded-xl shadow-xl text-sm cursor-pointer active:scale-[0.99] transition-all">
                     <i class="fa-solid fa-magnifying-glass-chart mr-1.5"></i> Scan Advertisement (Check Karein)
                 </button>
@@ -182,11 +192,13 @@
             }
         }
 
-        // Job Scam Poster Scanning Core Integration
+        // Job Scam Poster Scanning Core Integration with Content Validation Block
         function processScamImage(event) {
             const file = event.target.files[0];
             if (!file) return;
 
+            document.getElementById('scamTypeError').classList.add('hidden');
+            document.getElementById('scamResult').classList.add('hidden');
             document.getElementById('scamZoneInner').classList.add('hidden');
             document.getElementById('scamLoading').classList.remove('hidden');
 
@@ -194,19 +206,36 @@
             reader.onload = function() {
                 Tesseract.recognize(reader.result, 'eng')
                     .then(({ data: { text } }) => {
+                        const extractedLower = text.toLowerCase();
+                        
+                        // Strict Job Advertisement Anchors Check
+                        const jobAnchors = ['job', 'hiring', 'salary', 'staff', 'earn', 'income', 'typing', 'work', 'office', 'vacant', 'required', 'position'];
+                        let containsJobContext = jobAnchors.some(anchor => extractedLower.includes(anchor));
+
+                        if (!containsJobContext || text.trim().length < 15) {
+                            fallbackToScamEngine();
+                            return;
+                        }
+
                         document.getElementById('jobText').value = text;
                         document.getElementById('charCount').innerText = text.length + " characters";
                         document.getElementById('scamLoading').classList.add('hidden');
                         document.getElementById('scamZoneInner').classList.remove('hidden');
-                        analyzeJobScam(); // Fire scoring check automatically after processing image
+                        analyzeJobScam(); 
                     })
                     .catch(err => {
                         console.error(err);
-                        document.getElementById('scamLoading').classList.add('hidden');
-                        document.getElementById('scamZoneInner').classList.remove('hidden');
+                        fallbackToScamEngine();
                     });
             };
             reader.readAsDataURL(file);
+        }
+
+        function fallbackToScamEngine() {
+            document.getElementById('scamLoading').classList.add('hidden');
+            document.getElementById('scamZoneInner').classList.remove('hidden');
+            document.getElementById('scamTypeError').classList.remove('hidden');
+            playVoiceGuide('scam'); // Strictly plays scam audio on non-job image upload
         }
 
         function analyzeJobScam() {
@@ -233,7 +262,7 @@
             if (score >= 60) {
                 resultBox.className = "mt-8 p-6 rounded-xl border bg-red-950/40 border-red-500/30 text-red-400";
                 resultBox.innerHTML = `<h4 class="font-black text-sm">⚠️ HIGH RISK SCAM (${score}%)</h4><p class="text-xs text-gray-200 mt-1">Do not send any money!</p>`;
-                playVoiceGuide('scam');
+                playVoiceGuide('scam'); // Strictly plays scam audio on high risk scam detection
             } else {
                 resultBox.className = "mt-8 p-6 rounded-xl border bg-emerald-950/30 border-emerald-500/30 text-emerald-400";
                 resultBox.innerHTML = `<h4 class="font-bold text-sm">✅ SAFE ADVERTISEMENT (${score}%)</h4>`;
@@ -281,12 +310,10 @@
                 };
                 reader.readAsArrayBuffer(file);
             } else if (isImage) {
-                // If it's a structural snapshot image (JPEG/PNG Cover)
                 const reader = new FileReader();
                 reader.onload = function() {
                     Tesseract.recognize(reader.result, 'eng')
                         .then(({ data: { text } }) => {
-                            // Image parsing layout structurally lacks standard linear stream
                             validateCVAndScore(text, true); 
                         })
                         .catch(fallbackToTextEngine);
@@ -305,7 +332,7 @@
             document.getElementById('atsLoading').classList.add('hidden');
             document.getElementById('dropzoneInner').classList.remove('hidden');
             document.getElementById('documentTypeError').classList.remove('hidden');
-            playVoiceGuide('cv');
+            playVoiceGuide('cv'); // Strictly plays CV audio on non-CV validation failures
         }
 
         function validateCVAndScore(text, isMultiColumn) {
@@ -412,7 +439,7 @@
                 </div>
             `;
 
-            if (score < 100) playVoiceGuide('cv');
+            if (score < 100) playVoiceGuide('cv'); // Strictly plays CV audio on structural report rendering
         }
     </script>
 </body>
