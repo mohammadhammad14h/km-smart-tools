@@ -23,21 +23,34 @@
     <!-- HEADER BRANDING -->
     <header class="w-full max-w-6xl mx-auto px-4 py-6 flex justify-between items-center border-b border-gray-800/60">
         <div class="flex items-center space-x-3">
-            <div class="p-2.5 bg-sky-500/10 rounded-xl border border-sky-500/30">
-                <i class="fa-solid fa-graduation-cap text-sky-400 text-xl"></i>
+            <!-- Platform Logo Integration -->
+            <div class="w-12 h-12 rounded-xl border border-sky-500/30 overflow-hidden shadow-lg shadow-sky-500/5">
+                <img src="logo.jpg" alt="KnowledgeMentor Logo" class="w-full h-full object-cover">
             </div>
             <div>
                 <h1 class="text-xl font-extrabold tracking-wide text-white">Knowledge<span class="text-sky-400">Mentor</span></h1>
                 <p class="text-[10px] text-gray-400 uppercase tracking-widest font-semibold">Career Support Platform</p>
             </div>
         </div>
-        <div class="flex items-center space-x-2 text-xs text-gray-400 bg-gray-900/50 px-3 py-1.5 rounded-full border border-gray-800">
-            <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-            <span class="font-medium tracking-wide">100% Local Guard Engine</span>
+        
+        <div class="flex items-center space-x-4">
+            <!-- Engine Status -->
+            <div class="hidden md:flex items-center space-x-2 text-xs text-gray-400 bg-gray-900/50 px-3 py-1.5 rounded-full border border-gray-800">
+                <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                <span class="font-medium tracking-wide">100% Local Guard Engine</span>
+            </div>
+            <!-- Founder Profile Badge -->
+            <div class="flex items-center space-x-2 bg-gray-950 p-1 rounded-xl border border-gray-800/80">
+                <img src="profile.jpg" alt="Mohammad Hammad" class="w-8 h-8 rounded-lg object-cover border border-gray-800">
+                <div class="pr-2 hidden sm:block">
+                    <p class="text-[10px] font-bold text-white leading-tight">Mohammad Hammad</p>
+                    <p class="text-[8px] text-sky-400 font-medium">Founder</p>
+                </div>
+            </div>
         </div>
     </header>
 
-    <!-- AUDIO NODES -->
+    <!-- AUDIO NODES (Strictly Mapped to Corrected File Assets) -->
     <audio id="audioScam" src="scam_alert.mp3" preload="auto"></audio>
     <audio id="audioCV" src="cv_alert.mp3" preload="auto"></audio>
 
@@ -184,15 +197,15 @@
             }
         }
 
+        // Direct Core Audio Router (Perfectly handles renamed tracking nodes)
         function playVoiceGuide(type) {
             let activeAudio = (type === 'scam') ? scamAudio : cvAudio;
             if (activeAudio) {
                 activeAudio.currentTime = 0;
-                activeAudio.play().catch(e => console.log("Audio deferred"));
+                activeAudio.play().catch(e => console.log("Audio play deferred"));
             }
         }
 
-        // Job Scam Poster Scanning Core Integration with Content Validation Block
         function processScamImage(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -208,7 +221,6 @@
                     .then(({ data: { text } }) => {
                         const extractedLower = text.toLowerCase();
                         
-                        // Strict Job Advertisement Anchors Check
                         const jobAnchors = ['job', 'hiring', 'salary', 'staff', 'earn', 'income', 'typing', 'work', 'office', 'vacant', 'required', 'position'];
                         let containsJobContext = jobAnchors.some(anchor => extractedLower.includes(anchor));
 
@@ -235,7 +247,7 @@
             document.getElementById('scamLoading').classList.add('hidden');
             document.getElementById('scamZoneInner').classList.remove('hidden');
             document.getElementById('scamTypeError').classList.remove('hidden');
-            playVoiceGuide('scam'); // Strictly plays scam audio on non-job image upload
+            playVoiceGuide('scam'); 
         }
 
         function analyzeJobScam() {
@@ -262,7 +274,7 @@
             if (score >= 60) {
                 resultBox.className = "mt-8 p-6 rounded-xl border bg-red-950/40 border-red-500/30 text-red-400";
                 resultBox.innerHTML = `<h4 class="font-black text-sm">⚠️ HIGH RISK SCAM (${score}%)</h4><p class="text-xs text-gray-200 mt-1">Do not send any money!</p>`;
-                playVoiceGuide('scam'); // Strictly plays scam audio on high risk scam detection
+                playVoiceGuide('scam'); 
             } else {
                 resultBox.className = "mt-8 p-6 rounded-xl border bg-emerald-950/30 border-emerald-500/30 text-emerald-400";
                 resultBox.innerHTML = `<h4 class="font-bold text-sm">✅ SAFE ADVERTISEMENT (${score}%)</h4>`;
@@ -332,13 +344,12 @@
             document.getElementById('atsLoading').classList.add('hidden');
             document.getElementById('dropzoneInner').classList.remove('hidden');
             document.getElementById('documentTypeError').classList.remove('hidden');
-            playVoiceGuide('cv'); // Strictly plays CV audio on non-CV validation failures
+            playVoiceGuide('cv'); 
         }
 
         function validateCVAndScore(text, isMultiColumn) {
             const lowerText = text.toLowerCase();
             
-            // 1. MANDATORY CV VALIDATION PROTOCOL
             const structuralAnchors = ['experience', 'education', 'skills', 'projects', 'summary', 'phone', 'email', 'contact', 'qualification', 'languages', 'certifications'];
             let matchedAnchors = structuralAnchors.filter(anchor => lowerText.includes(anchor)).length;
 
@@ -350,7 +361,6 @@
             let score = 100;
             let report = [];
 
-            // 2. ABSOLUTE COLUMN AND STYLISH DETECTOR GRID LOCK
             const stylePatterns = ['sidebar', 'skills grid', 'column-2', 'right panel', 'left panel', 'profile picture', 'resume template', '||', '•  •'];
             let hasStylingPhrases = stylePatterns.some(pattern => lowerText.includes(pattern));
 
@@ -371,7 +381,6 @@
                 });
             }
 
-            // Keyword density tracker
             const keywords = ['react', 'javascript', 'node', 'sql', 'git', 'api', 'development', 'software', 'seo', 'marketing', 'operations', 'finance', 'accounts', 'budgeting', 'recruitment', 'payroll'];
             let matchedKeywords = keywords.filter(kw => lowerText.includes(kw)).length;
             if (matchedKeywords < 3) {
@@ -384,7 +393,6 @@
                 });
             }
 
-            // Objective phrase penalty
             if (lowerText.includes('challenging position') || lowerText.includes('utilize my skills')) {
                 score -= 15;
                 report.push({
@@ -395,7 +403,6 @@
                 });
             }
 
-            // Passive word penalty
             if (lowerText.includes('responsible for')) {
                 score -= 15;
                 report.push({
@@ -439,7 +446,7 @@
                 </div>
             `;
 
-            if (score < 100) playVoiceGuide('cv'); // Strictly plays CV audio on structural report rendering
+            if (score < 100) playVoiceGuide('cv'); 
         }
     </script>
 </body>
