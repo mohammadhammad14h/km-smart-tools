@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KnowledgeMentor - Universal Guard Engine</title>
+    <title>KnowledgeMentor - Universal Guard Engine Pro V3</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-    <!-- Tesseract.js for Local Client-Side Image OCR Scanning -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
@@ -35,7 +34,7 @@
         <div class="flex items-center space-x-4">
             <div class="hidden md:flex items-center space-x-2 text-xs text-gray-400 bg-gray-900/50 px-3 py-1.5 rounded-full border border-gray-800">
                 <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                <span class="font-medium tracking-wide">100% Local Guard Engine</span>
+                <span class="font-medium tracking-wide">v3.0 Strict Guard Grid</span>
             </div>
             <div class="flex items-center space-x-2 bg-gray-950 p-1 rounded-xl border border-gray-800/80">
                 <img src="profile.jpg" alt="Mohammad Hammad" class="w-8 h-8 rounded-lg object-cover border border-gray-800">
@@ -71,17 +70,17 @@
             <div class="text-center max-w-xl mx-auto mb-8">
                 <h2 class="text-xl md:text-2xl font-black text-white mb-1.5">Fake or Genuine? Find Out Instantly!</h2>
                 <h3 class="text-xs md:text-sm font-semibold text-sky-400 mb-4">(Fake Ya Genuine? Abhi Pata Chalega!)</h3>
-                <p class="text-xs text-gray-400">Paste job text OR upload a Job Poster/Screenshot (.jpg, .jpeg, .png)</p>
+                <p class="text-xs text-gray-400">Paste job text OR upload any file format (.jpg, .png, .pdf, .txt, etc.)</p>
             </div>
 
             <div class="space-y-4">
                 <!-- Custom Client Side Error Alert for Non-Job Posters -->
-                <div id="scamTypeError" class="hidden p-4 bg-red-950/40 border border-red-500/30 rounded-xl text-red-400 text-xs flex items-start space-x-3 shadow-lg">
+                <div id="scamTypeError" class="hidden p-4 bg-red-950/40 border border-red-500/30 rounded-xl text-red-400 text-xs flex items-start space-x-3 shadow-lg animate-bounce">
                     <i class="fa-solid fa-circle-exclamation text-base mt-0.5"></i>
                     <div>
                         <span class="font-extrabold text-sm block">❌ Processing Rejected: File Verification Error</span>
-                        <span class="block text-gray-300 text-[11px] mt-0.5">Please share the correct poster and pic, it does not match standard job layouts. System has rejected this file.</span>
-                        <span class="block text-red-300 italic font-medium mt-1">(Meherbani karke sahi job ad ya poster upload karein. System ne is file ko reject kar diya hai.)</span>
+                        <span class="block text-gray-300 text-[11px] mt-0.5">Please share the correct pic and poster and does not match the format blocked.</span>
+                        <span class="block text-red-300 italic font-medium mt-1">(Meherbani karke sirf sahi job post ya poster share karein, faltu data blocked hai!)</span>
                     </div>
                 </div>
 
@@ -94,15 +93,15 @@
                     </div>
                 </div>
 
-                <!-- Poster Image Input Dropzone -->
+                <!-- Universal File Input Dropzone for Job Module -->
                 <div id="scamImageZone" class="border border-dashed border-gray-800 bg-gray-950/30 rounded-xl p-4 text-center cursor-pointer hover:border-sky-500/50 transition-all" onclick="document.getElementById('scamFile').click()">
-                    <input type="file" id="scamFile" accept=".jpg,.jpeg,.png" class="hidden" onchange="processScamImage(event)">
+                    <input type="file" id="scamFile" accept=".jpg,.jpeg,.png,.pdf,.txt,.docx,.doc" class="hidden" onchange="processScamUniversalFile(event)">
                     <div id="scamZoneInner" class="text-xs text-gray-400 space-y-1">
-                        <p class="font-semibold text-gray-300"><i class="fa-solid fa-image text-sky-400 mr-1.5"></i> Click to Upload Job Poster / Banner</p>
-                        <p class="text-[10px] text-gray-500">(Sirf Jobs ki pictures ya screenshots upload karein)</p>
+                        <p class="font-semibold text-gray-300"><i class="fa-solid fa-file-shield text-sky-400 mr-1.5"></i> Click to Upload Any Job Format File / Poster</p>
+                        <p class="text-[10px] text-gray-500">(All Formats Allowed: Pictures, PDFs, Documents, Screenshots)</p>
                     </div>
                     <div id="scamLoading" class="hidden text-xs text-sky-400 font-bold animate-pulse">
-                        <i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i> Extracting & scanning image nodes for risk variables...
+                        <i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i> Verifying content framework & scanning for risk variables...
                     </div>
                 </div>
 
@@ -110,7 +109,35 @@
                     <i class="fa-solid fa-magnifying-glass-chart mr-1.5"></i> Scan Advertisement (Check Karein)
                 </button>
             </div>
+            
+            <!-- Result Box -->
             <div id="scamResult" class="mt-8 hidden p-6 rounded-xl border transition-all"></div>
+            
+            <!-- Scam Avoidance Guide Section -->
+            <div id="scamGuideWrapper" class="mt-4 hidden p-5 bg-amber-950/20 border border-amber-500/20 rounded-xl space-y-4">
+                <div class="flex items-center space-x-2 border-b border-amber-500/10 pb-2.5">
+                    <i class="fa-solid fa-hand-holding-hand text-amber-400 text-sm"></i>
+                    <h4 class="text-xs font-black text-amber-400 tracking-wider uppercase">KnowledgeMentor Scam Avoidance Guide / حفاظتی گائیڈ</h4>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div class="space-y-2 border-r border-gray-800/40 pr-2">
+                        <h5 class="font-bold text-white uppercase tracking-wide text-[11px] text-amber-300">English Directives</h5>
+                        <ul class="list-disc list-inside text-gray-300 space-y-1">
+                            <li><strong class="text-white">Never Pay:</strong> No legitimate company in Pakistan requests dynamic upfront processing fees.</li>
+                            <li><strong class="text-white">Verify Domain:</strong> Cross-check companies on official portals or LinkedIn profiles before responding.</li>
+                            <li><strong class="text-white">Secure Data:</strong> Do not send pictures of your CNIC or absolute identity bank tokens to untrusted contacts.</li>
+                        </ul>
+                    </div>
+                    <div class="space-y-2 text-right">
+                        <h5 class="font-bold text-white uppercase tracking-wide text-[11px] text-amber-300">اردو ہدایات</h5>
+                        <ul class="list-none text-gray-300 space-y-1">
+                            <li><span class="text-white font-semibold">پیسے مت دیں:</span> پاکستان کی کوئی بھی اصل کمپنی نوکری دینے کے لیے رجسٹریشن فیس نہیں مانگتی۔</li>
+                            <li><span class="text-white font-semibold">ای میل چیک کریں:</span> کمپنی کا نام لنکڈ ان یا گوگل پر سرچ کریں کہ وہ حقیقت میں موجود ہے یا نہیں۔</li>
+                            <li><span class="text-white font-semibold">ڈیٹا محفوظ رکھیں:</span> انجان واٹس ایپ نمبرز پر شناختی کارڈ کی تصویر یا ذاتی معلومات ہرگز شیئر نہ کریں۔</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- ATS CV MODAL -->
@@ -121,7 +148,7 @@
                 <p class="text-xs text-gray-400 leading-relaxed">
                     Upload your profile in any format (.pdf, .docx, .doc, .txt, .rtf, .jpg, .jpeg, .png). <br>
                     <span class="text-purple-300/90 font-medium block mt-2 p-2 bg-purple-950/20 border border-purple-900/40 rounded-lg">
-                        ⚠️ WARNING: Multi-column architectures, sidebars, stylized grids, or fancy profiles will be penalized automatically to protect true ATS parsing alignment.
+                        ⚠️ WARNING: Only valid Resume/CV files are accepted. Faltu pics or unrelated documents will be automatically rejected by the strict scanner loop.
                     </span>
                 </p>
             </div>
@@ -147,12 +174,12 @@
                 </div>
 
                 <!-- Custom Client Side Error Alert for Non-CV files -->
-                <div id="documentTypeError" class="hidden p-4 bg-red-950/40 border border-red-500/30 rounded-xl text-red-400 text-xs flex items-start space-x-3 shadow-lg">
+                <div id="documentTypeError" class="hidden p-4 bg-red-950/40 border border-red-500/30 rounded-xl text-red-400 text-xs flex items-start space-x-3 shadow-lg animate-bounce">
                     <i class="fa-solid fa-circle-exclamation text-base mt-0.5"></i>
                     <div>
                         <span class="font-extrabold text-sm block">❌ Processing Rejected: This Document is NOT a CV / Resume!</span>
-                        <span class="block text-gray-300 text-[11px] mt-0.5">The system checked the content and found it lacks professional profile structure anchors (Experience, Skills, Education, etc.).</span>
-                        <span class="block text-red-300 italic font-medium mt-1">(Yeh file standard CV nahi hai! System ne reject kar diya hai.)</span>
+                        <span class="block text-gray-300 text-[11px] mt-0.5">Please share the correct pic and poster and does not match the format blocked.</span>
+                        <span class="block text-red-300 italic font-medium mt-1">(Yeh file standard CV nahi hai! Faltu data blocks are rejected.)</span>
                     </div>
                 </div>
 
@@ -172,8 +199,7 @@
                             Aapki CV agar multi-column ya stylish grids par bani hai to use khatam karein. Is single-column structure text ko copy karein aur Microsoft Word/Google Docs mein bina kisi graphics ke customize kar ke save karein.
                         </p>
                         <div class="relative group">
-                            <textarea id="atsTemplateText" readonly rows="8" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3.5 text-[11px] font-mono text-gray-400 focus:outline-none custom-scrollbar select-all">
-[FIRST NAME] [LAST NAME]
+                            <textarea id="atsTemplateText" readonly rows="8" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3.5 text-[11px] font-mono text-gray-400 focus:outline-none custom-scrollbar select-all">[FIRST NAME] [LAST NAME]
 [City, Pakistan] | [Phone Number] | [Email Address] | [LinkedIn Customized URL]
 
 PROFESSIONAL SUMMARY
@@ -203,8 +229,7 @@ PROJECTS
 
 EDUCATION
 [Degree Name, e.g., BS Computer Science]
-[University Name / Institution], [City] | Graduation Year: [Year]
-                            </textarea>
+[University Name / Institution], [City] | Graduation Year: [Year]</textarea>
                             <button onclick="copyAtsTemplate()" class="absolute right-3.5 bottom-4 bg-purple-600 hover:bg-purple-500 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg shadow-lg cursor-pointer transition-all active:scale-95">
                                 <i class="fa-solid fa-copy mr-1"></i> Copy Template
                             </button>
@@ -229,11 +254,56 @@ EDUCATION
         const scamAudio = document.getElementById('audioScam');
         const cvAudio = document.getElementById('audioCV');
 
+        // JOB POST CORE ANCHORS FOR VALIDATION
+        const jobAnchors = [
+            'job', 'hiring', 'salary', 'staff', 'earn', 'income', 'typing', 
+            'work', 'office', 'vacant', 'required', 'position', 'experience', 
+            'cv', 'resume', 'whatsapp', 'apply', 'contact', 'qualification', 'skills', 'career'
+        ];
+
+        // CORE ARRAYS & DATABASES (LOCALLY LOADED)
+        const pkCorporateRegistry = [
+            'systems limited', 'systems ltd', '10pearls', 'hbl', 'habib bank', 'bop', 'bank of punjab', 'jazz', 'mobilink', 
+            'telenor', 'zong', 'ufone', 'ptcl', 'engro', 'fauji fertilizer', 'ffc', 'nestle', 'unilever', 'pepsico', 
+            'k-electric', 'ke', 'national bank', 'nbp', 'mcb', 'allied bank', 'abl', 'alfa', 'bank alfalah', 'meezan bank', 
+            'interwood', 'sapphire', 'alkaram', 'gul ahmed', 'daraz', 'bogo', 'bykea', 'sadapay', 'nayapay', 'remotebase'
+        ];
+
+        const pkCitiesRegistry = [
+            'karachi', 'lahore', 'faisalabad', 'rawalpindi', 'gujranwala', 'peshawar', 'multan', 'hyderabad', 'islamabad', 
+            'quetta', 'bahawalpur', 'sargodha', 'sialkot', 'sukkur', 'jhang', 'sheikhupura', 'larkana', 'gujrat', 'maradan', 
+            'kasur', 'rahim yar khan', 'sahiwal', 'okara', 'wah cantt', 'deraghazi khan', 'mirpur khas', 'chiniot', 'kamoke', 
+            'saddiqabad', 'turbat', 'shikarpur', 'hafeezabad', 'jhelum', 'khanewal', 'khairpur', 'hub', 'dadu', 'jacobabad', 
+            'muzaffargarh', 'abbottabad', 'khuzdar', 'pakpattan', 'tando allahyar', 'ahmadpur east', 'vihari', 'jaranwala', 
+            'new mirpur', 'kamalia', 'kot addu', 'nowshera', 'swabi', 'khushab', 'dera ismail khan', 'chaman', 'kandhkot', 
+            'gawadar', 'gujrat', 'skardu', 'gilgit', 'hunza', 'muzaffarabad', 'mirpur', 'kotli', 'bagh', 'rawalakot'
+        ];
+
+        const emailBlacklist = ['@gmail.com', '@yahoo.com', '@outlook.com', '@hotmail.com', '@live.com', '@icloud.com', '@protonmail.com', '@yandex.com'];
+
+        const universalKeywords = [
+            // IT & CS
+            'react', 'javascript', 'node', 'sql', 'git', 'api', 'development', 'software', 'next.js', 'mongodb',
+            // Medical & Healthcare
+            'mbbs', 'bcls', 'clinical', 'nursing', 'anatomy', 'physiology', 'pharmacology', 'patient care', 'diagnosis', 'hospital',
+            // Finance & Accounts
+            'audit', 'taxation', 'ledger', 'balance sheet', 'ifrs', 'quickbooks', 'excel', 'sap', 'cma', 'acca', 'budgeting', 'financial analysis',
+            // HR & Recruitment
+            'talent acquisition', 'onboarding', 'payroll', 'hrms', 'kpi', 'employee relations', 'performance management', 'recruitment',
+            // Legal
+            'compliance', 'litigation', 'corporate law', 'drafting', 'contracts', 'legal research', 'arbitration', 'advocate',
+            // Engineering (Mech/Elec/Civil)
+            'autocad', 'solidworks', 'matlab', 'plc', 'scada', 'circuit design', 'hvac', 'estimation', 'surveying', 'revit', 'site supervision',
+            // Sales & Marketing
+            'b2b', 'lead generation', 'crm', 'sales funnel', 'seo', 'sem', 'digital marketing', 'negotiation', 'cold calling',
+            // Admin & Operations
+            'procurement', 'inventory', 'supply chain', 'logistics', 'vendor management', 'office administration', 'documentation'
+        ];
+
         document.getElementById('jobText').addEventListener('input', function() {
             document.getElementById('charCount').innerText = this.value.length + " characters";
         });
 
-        // Tab Switching logic
         function switchTab(type) {
             const scamTab = document.getElementById('scamTabBtn');
             const atsTab = document.getElementById('atsTabBtn');
@@ -272,47 +342,75 @@ EDUCATION
             }
         }
 
-        function processScamImage(event) {
+        // UNIVERSAL SCANNER FOR JOB SCAM MODULE (Any File Format)
+        function processScamUniversalFile(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             document.getElementById('scamTypeError').classList.add('hidden');
             document.getElementById('scamResult').classList.add('hidden');
+            document.getElementById('scamGuideWrapper').classList.add('hidden');
             document.getElementById('scamZoneInner').classList.add('hidden');
             document.getElementById('scamLoading').classList.remove('hidden');
 
-            const reader = new FileReader();
-            reader.onload = function() {
-                Tesseract.recognize(reader.result, 'eng')
-                    .then(({ data: { text } }) => {
-                        const extractedLower = text.toLowerCase();
-                        
-                        const jobAnchors = [
-                            'job', 'hiring', 'salary', 'staff', 'earn', 'income', 'typing', 
-                            'work', 'office', 'vacant', 'required', 'position', 'experience', 
-                            'cv', 'resume', 'whatsapp', 'apply', 'contact', 'qualification'
-                        ];
-                        
-                        let containsJobContext = jobAnchors.some(anchor => extractedLower.includes(anchor));
+            const filename = file.name.toLowerCase();
 
-                        // Faltu Pic Handled: No text matched means it gets completely rejected. No voice.
-                        if (!containsJobContext || text.trim().length < 20) {
-                            fallbackToScamEngine(); 
-                            return;
+            if (filename.endsWith('.pdf')) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    const typedarray = new Uint8Array(this.result);
+                    pdfjsLib.getDocument(typedarray).promise.then(function(pdf) {
+                        let totalPages = pdf.numPages;
+                        let countPromises = [];
+                        for (let i = 1; i <= totalPages; i++) {
+                            countPromises.push(pdf.getPage(i).then(page => {
+                                return page.getTextContent().then(textContent => {
+                                    return textContent.items.map(item => item.str).join(' ');
+                                });
+                            }));
                         }
+                        Promise.all(countPromises).then(pagesText => {
+                            verifyAndLoadScamText(pagesText.join(' '));
+                        }).catch(fallbackToScamEngine);
+                    }).catch(fallbackToScamEngine);
+                };
+                reader.readAsArrayBuffer(file);
+            } else if (file.type.startsWith('image/') || filename.endsWith('.png') || filename.endsWith('.jpg') || filename.endsWith('.jpeg')) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    Tesseract.recognize(reader.result, 'eng')
+                        .then(({ data: { text } }) => {
+                            verifyAndLoadScamText(text);
+                        })
+                        .catch(fallbackToScamEngine);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // Plain text/doc formats
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    verifyAndLoadScamText(e.target.result);
+                };
+                reader.readAsText(file);
+            }
+        }
 
-                        document.getElementById('jobText').value = text;
-                        document.getElementById('charCount').innerText = text.length + " characters";
-                        document.getElementById('scamLoading').classList.add('hidden');
-                        document.getElementById('scamZoneInner').classList.remove('hidden');
-                        analyzeJobScam(); 
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        fallbackToScamEngine();
-                    });
-            };
-            reader.readAsDataURL(file);
+        function verifyAndLoadScamText(text) {
+            const extractedLower = text.toLowerCase();
+            let containsJobContext = jobAnchors.some(anchor => extractedLower.includes(anchor));
+            let containsCity = pkCitiesRegistry.some(city => extractedLower.includes(city));
+
+            // STRICT FILTER: Faltu textual or visual content verification
+            if ((!containsJobContext && !containsCity) || text.trim().length < 20) {
+                fallbackToScamEngine(); 
+                return;
+            }
+
+            document.getElementById('jobText').value = text;
+            document.getElementById('charCount').innerText = text.length + " characters";
+            document.getElementById('scamLoading').classList.add('hidden');
+            document.getElementById('scamZoneInner').classList.remove('hidden');
+            analyzeJobScam();
         }
 
         function fallbackToScamEngine() {
@@ -321,31 +419,49 @@ EDUCATION
             document.getElementById('scamLoading').classList.add('hidden');
             document.getElementById('scamZoneInner').classList.remove('hidden');
             document.getElementById('scamTypeError').classList.remove('hidden'); 
+            document.getElementById('scamGuideWrapper').classList.add('hidden');
+            document.getElementById('scamResult').classList.add('hidden');
         }
 
         function analyzeJobScam() {
             const rawText = document.getElementById('jobText').value.trim();
             const resultBox = document.getElementById('scamResult');
+            const guideBox = document.getElementById('scamGuideWrapper');
             const errorText = document.getElementById('validationError');
 
-            if (rawText.length < 20) {
-                errorText.innerText = "❌ Details block text is too short to scan!";
-                errorText.classList.remove('hidden');
+            // Plain text content strict screening
+            const lowerRaw = rawText.toLowerCase();
+            let hasPlainJobContext = jobAnchors.some(anchor => lowerRaw.includes(anchor));
+            let hasPlainCity = pkCitiesRegistry.some(city => lowerRaw.includes(city));
+
+            if (rawText.length < 20 || (!hasPlainJobContext && !hasPlainCity)) {
+                fallbackToScamEngine();
                 return;
             }
             errorText.classList.add('hidden');
 
-            const text = rawText.toLowerCase();
+            const text = lowerRaw;
             let score = 0;
             
             if (text.includes('fee') || text.includes('deposit') || text.includes('charges') || text.includes('paisa') || text.includes('form processing') || text.includes('registration')) score += 45;
             if (text.includes('ghar baithe') || text.includes('typing') || text.includes('sms sending') || text.includes('online work')) score += 30;
             if (text.includes('whatsapp only') || text.includes('urgent hiring') || text.includes('daily payment') || text.includes('no experience required')) score += 25;
 
+            let usesFreeEmail = emailBlacklist.some(domain => text.includes(domain));
+            if (usesFreeEmail && (text.includes('hiring') || text.includes('official'))) {
+                score += 20; 
+            }
+
+            let containsTrustedCorp = pkCorporateRegistry.some(corp => text.includes(corp));
+            if (containsTrustedCorp && score > 0) {
+                score -= 30; 
+            }
+
             if (score > 100) score = 100;
+            if (score < 0) score = 0;
+
             resultBox.classList.remove('hidden');
             
-            // CORRECTED LOGIC PATTERN: Danger score triggers danger block AND turns on voice guide instantly!
             if (score >= 50) {
                 resultBox.className = "mt-8 p-6 rounded-xl border bg-red-950/40 border-red-500/30 text-red-400 shadow-xl";
                 resultBox.innerHTML = `
@@ -357,7 +473,8 @@ EDUCATION
                             <p class="text-[11px] text-red-300 italic font-medium mt-1.5">(Paisa mat dena! Yeh 100% dhoka hai.)</p>
                         </div>
                     </div>`;
-                playVoiceGuide('scam'); // Triggers here when it is a scam
+                guideBox.classList.remove('hidden');
+                playVoiceGuide('scam'); 
             } else {
                 resultBox.className = "mt-8 p-6 rounded-xl border bg-emerald-950/30 border-emerald-500/30 text-emerald-400 shadow-xl";
                 resultBox.innerHTML = `
@@ -368,10 +485,11 @@ EDUCATION
                             <p class="text-xs text-gray-300 mt-1">The system scan complete. No critical financial demand layers or high-risk scam triggers were located in this advertisement framework.</p>
                         </div>
                     </div>`;
-                // System remains completely quiet if post is safe.
+                guideBox.classList.add('hidden');
             }
         }
 
+        // UNIVERSAL SCANNER FOR CV/RESUME MODULE (All Formats Allowed & Rejections Managed)
         function processDocumentInput(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -381,9 +499,10 @@ EDUCATION
             document.getElementById('dropzoneInner').classList.add('hidden');
             document.getElementById('atsLoading').classList.remove('hidden');
 
-            const isImage = file.type.startsWith('image/') || file.name.endsWith('.png') || file.name.endsWith('.jpg') || file.name.endsWith('.jpeg');
+            const filename = file.name.toLowerCase();
+            const isImage = file.type.startsWith('image/') || filename.endsWith('.png') || filename.endsWith('.jpg') || filename.endsWith('.jpeg');
 
-            if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+            if (file.type === 'application/pdf' || filename.endsWith('.pdf')) {
                 const reader = new FileReader();
                 reader.onload = function() {
                     const typedarray = new Uint8Array(this.result);
@@ -435,6 +554,7 @@ EDUCATION
             document.getElementById('atsLoading').classList.add('hidden');
             document.getElementById('dropzoneInner').classList.remove('hidden');
             document.getElementById('documentTypeError').classList.remove('hidden');
+            document.getElementById('atsResult').classList.add('hidden');
             playVoiceGuide('cv'); 
         }
 
@@ -444,7 +564,8 @@ EDUCATION
             const structuralAnchors = ['experience', 'education', 'skills', 'projects', 'summary', 'phone', 'email', 'contact', 'qualification', 'languages', 'certifications'];
             let matchedAnchors = structuralAnchors.filter(anchor => lowerText.includes(anchor)).length;
 
-            if (matchedAnchors < 5) {
+            // STRICT SCANNER FOR RESUME: Rejects unrelated/faltu documents
+            if (matchedAnchors < 5 || text.trim().length < 50) {
                 fallbackToTextEngine();
                 return;
             }
@@ -461,7 +582,7 @@ EDUCATION
                     rule: "ATS Layout Structural Verification",
                     status: "fail",
                     msgEng: "Multi-column layout, image grid architecture, or heavy graphics detected. True ATS bots reject this immediately.",
-                    msgUrdu: "CV mein multi-column layout, graphic grids ya screenshot framework mila hai. ATS bots isko structural grid failure ki wajah se reject kar dete hain. Isko simple single-column plain linear layout text format mein convert karein."
+                    msgUrdu: "CV mein multi-column layout, graphic grids ya screenshot framework mila hai. Isko simple single-column plain linear layout text format mein convert karein."
                 });
             } else {
                 report.push({
@@ -472,15 +593,21 @@ EDUCATION
                 });
             }
 
-            const keywords = ['react', 'javascript', 'node', 'sql', 'git', 'api', 'development', 'software', 'seo', 'marketing', 'operations', 'finance', 'accounts', 'budgeting', 'recruitment', 'payroll'];
-            let matchedKeywords = keywords.filter(kw => lowerText.includes(kw)).length;
+            let matchedKeywords = universalKeywords.filter(kw => lowerText.includes(kw)).length;
             if (matchedKeywords < 3) {
                 score -= 25;
                 report.push({
                     rule: "Industrial Vocabulary Check",
                     status: "fail",
-                    msgEng: "Missing key technical tool keywords for your target field.",
-                    msgUrdu: "Aapki professional domain ke important tools aur keywords missing hain. Apne projects mein use kiye gaye tools add karein."
+                    msgEng: "Missing key technical tool keywords for your target professional field.",
+                    msgUrdu: "Aapki professional domain ke important industry-specific tools aur keywords missing hain."
+                });
+            } else {
+                report.push({
+                    rule: "Industrial Vocabulary Check",
+                    status: "pass",
+                    msgEng: `Verified: Strong industry presence with ${matchedKeywords} matching domain tokens.`,
+                    msgUrdu: `Behtareen! Aapki field ke mutabiq core technical keywords aur vocabulary standard ke mutabiq hain.`
                 });
             }
 
