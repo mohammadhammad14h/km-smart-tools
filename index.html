@@ -10,7 +10,7 @@
     <!-- Tesseract.js for Local Client-Side Image OCR Scanning -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f19; color: #f3f4f6; }
         .glass-card { background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
@@ -23,7 +23,6 @@
     <!-- HEADER BRANDING -->
     <header class="w-full max-w-6xl mx-auto px-4 py-6 flex justify-between items-center border-b border-gray-800/60">
         <div class="flex items-center space-x-3">
-            <!-- Platform Logo Integration -->
             <div class="w-12 h-12 rounded-xl border border-sky-500/30 overflow-hidden shadow-lg shadow-sky-500/5">
                 <img src="logo.jpg" alt="KnowledgeMentor Logo" class="w-full h-full object-cover">
             </div>
@@ -34,12 +33,10 @@
         </div>
         
         <div class="flex items-center space-x-4">
-            <!-- Engine Status -->
             <div class="hidden md:flex items-center space-x-2 text-xs text-gray-400 bg-gray-900/50 px-3 py-1.5 rounded-full border border-gray-800">
                 <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
                 <span class="font-medium tracking-wide">100% Local Guard Engine</span>
             </div>
-            <!-- Founder Profile Badge -->
             <div class="flex items-center space-x-2 bg-gray-950 p-1 rounded-xl border border-gray-800/80">
                 <img src="profile.jpg" alt="Mohammad Hammad" class="w-8 h-8 rounded-lg object-cover border border-gray-800">
                 <div class="pr-2 hidden sm:block">
@@ -50,7 +47,7 @@
         </div>
     </header>
 
-    <!-- AUDIO NODES (Strictly Mapped to Corrected File Assets) -->
+    <!-- AUDIO NODES -->
     <audio id="audioScam" src="scam_alert.mp3" preload="auto"></audio>
     <audio id="audioCV" src="cv_alert.mp3" preload="auto"></audio>
 
@@ -78,6 +75,16 @@
             </div>
 
             <div class="space-y-4">
+                <!-- Custom Client Side Error Alert for Non-Job Posters -->
+                <div id="scamTypeError" class="hidden p-4 bg-red-950/40 border border-red-500/30 rounded-xl text-red-400 text-xs flex items-start space-x-3 shadow-lg">
+                    <i class="fa-solid fa-circle-exclamation text-base mt-0.5"></i>
+                    <div>
+                        <span class="font-extrabold text-sm block">❌ Processing Rejected: File Verification Error</span>
+                        <span class="block text-gray-300 text-[11px] mt-0.5">Please share the correct poster and pic, it does not match standard job layouts. System has rejected this file.</span>
+                        <span class="block text-red-300 italic font-medium mt-1">(Meherbani karke sahi job ad ya poster upload karein. System ne is file ko reject kar diya hai.)</span>
+                    </div>
+                </div>
+
                 <!-- Text Area Input -->
                 <div id="scamInputWrapper">
                     <textarea id="jobText" rows="5" placeholder="Example: Ghar baithe online typing ka kaam karein, security deposit lazmi hai..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-4 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-sky-500 transition-all custom-scrollbar"></textarea>
@@ -92,20 +99,10 @@
                     <input type="file" id="scamFile" accept=".jpg,.jpeg,.png" class="hidden" onchange="processScamImage(event)">
                     <div id="scamZoneInner" class="text-xs text-gray-400 space-y-1">
                         <p class="font-semibold text-gray-300"><i class="fa-solid fa-image text-sky-400 mr-1.5"></i> Click to Upload Job Poster / Banner</p>
-                        <p class="text-[10px] text-gray-500">(Sirf Jobs ki pictures upload karein)</p>
+                        <p class="text-[10px] text-gray-500">(Sirf Jobs ki pictures ya screenshots upload karein)</p>
                     </div>
                     <div id="scamLoading" class="hidden text-xs text-sky-400 font-bold animate-pulse">
                         <i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i> Extracting & scanning image nodes for risk variables...
-                    </div>
-                </div>
-
-                <!-- Custom Client Side Error Alert for Non-Job Posters -->
-                <div id="scamTypeError" class="hidden p-4 bg-red-950/40 border border-red-500/30 rounded-xl text-red-400 text-xs flex items-start space-x-3 shadow-lg">
-                    <i class="fa-solid fa-circle-exclamation text-base mt-0.5"></i>
-                    <div>
-                        <span class="font-extrabold text-sm block">❌ Processing Rejected: This Image is NOT a Job Advertisement!</span>
-                        <span class="block text-gray-300 text-[11px] mt-0.5">The system verified the image content and found it lacks job structural anchors or hiring contextual phrases.</span>
-                        <span class="block text-red-300 italic font-medium mt-1">(Yeh picture kisi job ki nahi hai! System ne reject kar diya hai.)</span>
                     </div>
                 </div>
 
@@ -160,6 +157,64 @@
                 </div>
 
                 <div id="atsResult" class="mt-8 hidden p-6 rounded-xl border bg-gray-950/70 border-gray-800/80 space-y-6"></div>
+
+                <!-- DYNAMIC ATS COMPLIANT TEMPLATE TOOL KIT -->
+                <div class="pt-4 border-t border-gray-800/60">
+                    <div class="bg-gradient-to-r from-purple-950/30 to-slate-950 p-5 rounded-xl border border-purple-500/20">
+                        <div class="flex items-center space-x-2.5 mb-3">
+                            <i class="fa-solid fa-paste text-purple-400 text-base"></i>
+                            <div>
+                                <h4 class="text-xs font-extrabold text-white uppercase tracking-wider">100% ATS-Friendly Plain Text Template</h4>
+                                <p class="text-[10px] text-gray-400">(Agar score kam hai to is format ko use karein)</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-300 mb-4 leading-relaxed">
+                            Aapki CV agar multi-column ya stylish grids par bani hai to use khatam karein. Is single-column structure text ko copy karein aur Microsoft Word/Google Docs mein bina kisi graphics ke customize kar ke save karein.
+                        </p>
+                        <div class="relative group">
+                            <textarea id="atsTemplateText" readonly rows="8" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3.5 text-[11px] font-mono text-gray-400 focus:outline-none custom-scrollbar select-all">
+[FIRST NAME] [LAST NAME]
+[City, Pakistan] | [Phone Number] | [Email Address] | [LinkedIn Customized URL]
+
+PROFESSIONAL SUMMARY
+Dynamic and analytical professional with over [X] years of engineering/operational experience. Proven expertise in system architecture, core development cycles, and data management frameworks. Demonstrated history of improving baseline operational speed and managing team deliverables efficiently.
+
+CORE SKILLS
+* Technical Stack: JavaScript, React, Node.js, Next.js, Git, RESTful APIs
+* Professional Frameworks: Systems Design, Full-Stack Architecture, Agile Methodologies
+* Databases & Tools: MySQL, PostgreSQL, MongoDB, Postman Engine
+
+PROFESSIONAL EXPERIENCE
+[Job Title / Position] - [Company Name], [City, Pakistan]
+[Month, Year] – Present
+* Developed and deployed scalable application grids, increasing execution performance by 25%.
+* Spearheaded technical architecture modifications to isolate operational failure variables.
+* Managed cross-functional project scopes to achieve milestone alignment with stakeholders.
+
+[Previous Job Title] - [Previous Company Name], [City, Pakistan]
+[Month, Year] – [Month, Year]
+* Executed robust workflows that eliminated processing redundant arrays inside the tracking pipeline.
+* Supervised a multi-member developmental track to build localized support products.
+
+PROJECTS
+[Project Title / Universal Guard Engine]
+* Engineered an interactive client-side framework utilizing local OCR parsing technologies.
+* Restricted fraudulent link propagation by writing automated matching pattern blocks.
+
+EDUCATION
+[Degree Name, e.g., BS Computer Science]
+[University Name / Institution], [City] | Graduation Year: [Year]
+                            </textarea>
+                            <button onclick="copyAtsTemplate()" class="absolute right-3.5 bottom-4 bg-purple-600 hover:bg-purple-500 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg shadow-lg cursor-pointer transition-all active:scale-95">
+                                <i class="fa-solid fa-copy mr-1"></i> Copy Template
+                            </button>
+                        </div>
+                        <div id="copyToast" class="hidden text-center text-[10px] text-emerald-400 font-bold mt-2 animate-pulse">
+                            ✓ Copied successfully! Paste into Word/Docs now.
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
     </main>
@@ -178,6 +233,7 @@
             document.getElementById('charCount').innerText = this.value.length + " characters";
         });
 
+        // Tab Switching logic
         function switchTab(type) {
             const scamTab = document.getElementById('scamTabBtn');
             const atsTab = document.getElementById('atsTabBtn');
@@ -197,7 +253,17 @@
             }
         }
 
-        // Direct Core Audio Router (Perfectly handles renamed tracking nodes)
+        function copyAtsTemplate() {
+            const copyText = document.getElementById("atsTemplateText");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value);
+            
+            const toast = document.getElementById("copyToast");
+            toast.classList.remove("hidden");
+            setTimeout(() => { toast.classList.add("hidden"); }, 2500);
+        }
+
         function playVoiceGuide(type) {
             let activeAudio = (type === 'scam') ? scamAudio : cvAudio;
             if (activeAudio) {
@@ -221,11 +287,17 @@
                     .then(({ data: { text } }) => {
                         const extractedLower = text.toLowerCase();
                         
-                        const jobAnchors = ['job', 'hiring', 'salary', 'staff', 'earn', 'income', 'typing', 'work', 'office', 'vacant', 'required', 'position'];
+                        const jobAnchors = [
+                            'job', 'hiring', 'salary', 'staff', 'earn', 'income', 'typing', 
+                            'work', 'office', 'vacant', 'required', 'position', 'experience', 
+                            'cv', 'resume', 'whatsapp', 'apply', 'contact', 'qualification'
+                        ];
+                        
                         let containsJobContext = jobAnchors.some(anchor => extractedLower.includes(anchor));
 
-                        if (!containsJobContext || text.trim().length < 15) {
-                            fallbackToScamEngine();
+                        // Faltu Pic Handled: No text matched means it gets completely rejected. No voice.
+                        if (!containsJobContext || text.trim().length < 20) {
+                            fallbackToScamEngine(); 
                             return;
                         }
 
@@ -244,10 +316,11 @@
         }
 
         function fallbackToScamEngine() {
+            document.getElementById('jobText').value = ""; 
+            document.getElementById('charCount').innerText = "0 characters";
             document.getElementById('scamLoading').classList.add('hidden');
             document.getElementById('scamZoneInner').classList.remove('hidden');
-            document.getElementById('scamTypeError').classList.remove('hidden');
-            playVoiceGuide('scam'); 
+            document.getElementById('scamTypeError').classList.remove('hidden'); 
         }
 
         function analyzeJobScam() {
@@ -255,8 +328,8 @@
             const resultBox = document.getElementById('scamResult');
             const errorText = document.getElementById('validationError');
 
-            if (rawText.length < 25) {
-                errorText.innerText = "❌ Details block or Image text is too short!";
+            if (rawText.length < 20) {
+                errorText.innerText = "❌ Details block text is too short to scan!";
                 errorText.classList.remove('hidden');
                 return;
             }
@@ -264,20 +337,38 @@
 
             const text = rawText.toLowerCase();
             let score = 0;
-            if (text.includes('fee') || text.includes('deposit') || text.includes('charges') || text.includes('paisa') || text.includes('form processing')) score += 40;
-            if (text.includes('ghar baithe') || text.includes('typing') || text.includes('sms sending')) score += 30;
-            if (text.includes('whatsapp only') || text.includes('urgent hiring') || text.includes('daily payment')) score += 30;
+            
+            if (text.includes('fee') || text.includes('deposit') || text.includes('charges') || text.includes('paisa') || text.includes('form processing') || text.includes('registration')) score += 45;
+            if (text.includes('ghar baithe') || text.includes('typing') || text.includes('sms sending') || text.includes('online work')) score += 30;
+            if (text.includes('whatsapp only') || text.includes('urgent hiring') || text.includes('daily payment') || text.includes('no experience required')) score += 25;
 
             if (score > 100) score = 100;
             resultBox.classList.remove('hidden');
             
-            if (score >= 60) {
-                resultBox.className = "mt-8 p-6 rounded-xl border bg-red-950/40 border-red-500/30 text-red-400";
-                resultBox.innerHTML = `<h4 class="font-black text-sm">⚠️ HIGH RISK SCAM (${score}%)</h4><p class="text-xs text-gray-200 mt-1">Do not send any money!</p>`;
-                playVoiceGuide('scam'); 
+            // CORRECTED LOGIC PATTERN: Danger score triggers danger block AND turns on voice guide instantly!
+            if (score >= 50) {
+                resultBox.className = "mt-8 p-6 rounded-xl border bg-red-950/40 border-red-500/30 text-red-400 shadow-xl";
+                resultBox.innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <i class="fa-solid fa-triangle-exclamation text-xl mt-0.5"></i>
+                        <div>
+                            <h4 class="font-black text-sm tracking-wide">⚠️ HIGH RISK SCAM DETECTED (${score}%)</h4>
+                            <p class="text-xs text-gray-200 mt-1">Warning: This post shares deep statistical match models with job recruitment scams active in Pakistan. Do not send registration fees or dynamic payments!</p>
+                            <p class="text-[11px] text-red-300 italic font-medium mt-1.5">(Paisa mat dena! Yeh 100% dhoka hai.)</p>
+                        </div>
+                    </div>`;
+                playVoiceGuide('scam'); // Triggers here when it is a scam
             } else {
-                resultBox.className = "mt-8 p-6 rounded-xl border bg-emerald-950/30 border-emerald-500/30 text-emerald-400";
-                resultBox.innerHTML = `<h4 class="font-bold text-sm">✅ SAFE ADVERTISEMENT (${score}%)</h4>`;
+                resultBox.className = "mt-8 p-6 rounded-xl border bg-emerald-950/30 border-emerald-500/30 text-emerald-400 shadow-xl";
+                resultBox.innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <i class="fa-solid fa-circle-check text-xl mt-0.5"></i>
+                        <div>
+                            <h4 class="font-bold text-sm tracking-wide">✅ SAFE ADVERTISEMENT (${score}%)</h4>
+                            <p class="text-xs text-gray-300 mt-1">The system scan complete. No critical financial demand layers or high-risk scam triggers were located in this advertisement framework.</p>
+                        </div>
+                    </div>`;
+                // System remains completely quiet if post is safe.
             }
         }
 
